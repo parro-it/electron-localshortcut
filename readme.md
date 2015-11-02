@@ -1,14 +1,11 @@
 # electron-localshortcut
 
+A module to register/unregister a keyboard shortcut
+locally to a BrowserWindow instance, without using a Menu.
 
-
-[![Travis Build Status](https://img.shields.io/travis/parro-it/electron-localshortcut.svg)](http://travis-ci.org/parro-it/electron-localshortcut)
 [![NPM module](https://img.shields.io/npm/v/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 [![NPM downloads](https://img.shields.io/npm/dt/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 
-[![Code Climate score](https://img.shields.io/codeclimate/github/parro-it/electron-localshortcut.svg)](https://codeclimate.com/github/parro-it/electron-localshortcut)
-[![Tests coverage](https://img.shields.io/codeclimate/coverage/github/parro-it/electron-localshortcut.svg)](https://codeclimate.com/github/parro-it/electron-localshortcut)
-[![Dependencies status](https://img.shields.io/requires/github/parro-it/electron-localshortcut.svg)](https://requires.io/github/parro-it/electron-localshortcut/requirements/?branch=master)
 
 ## Installation
 
@@ -21,12 +18,60 @@ npm install --save electron-localshortcut
 ## Usage
 
 ```javascript
-  import electronLocalshortcut from 'electron-localshortcut'
+  const electronLocalshortcut = require('electron-localshortcut');
+  const BrowserWindow = require('browser-window');
+
+  const win = new BrowserWindow();
+  win.loadUrl('https://github.com');
+  win.show();
+
+  electronLocalshortcut.register(win, 'Ctrl+A', () => {
+    console.log('You pressed ctrl & A');
+  });
+
+  console.log(
+    electronLocalshortcut.isRegistered(win, 'Ctrl+A')
+  );      // true
+
+
 ```
 
-## Credits
+## Methods
+
+The `electron-localshortcut` module has th``e following methods:
+
+### `register(window, accelerator, callback)`
+
+* `window` BrowserWindow instance
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+* `callback` Function
+
+Registers a shortcut of `accelerator` on the `window` BrowserWindow instance. The `callback` is called when the registered shortcut is pressed by the user, only if `window` is focused.
+
+### `isRegistered(window, accelerator)`
+
+* `window` BrowserWindow instance
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+
+Returns `true` or `false` depending on whether the shortcut `accelerator` is
+registered on `window`.
+
+### `unregister(window, accelerator)`
+
+* `window` BrowserWindow instance
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+
+Unregisters the shortcut of `accelerator` registered on the BrowserWindow instance.
+
+### `unregisterAll(window)`
+
+* `window` BrowserWindow instance
+
+Unregisters all of the shortcuts registered on the BrowserWindow instance.
+
 
 ## License
+
 The MIT License (MIT)
 
 Copyright (c) 2015 Andrea Parodi
