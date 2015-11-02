@@ -1,0 +1,5 @@
+test
+*.sublime-*
+.gitignore
+.editorconfig
+private
