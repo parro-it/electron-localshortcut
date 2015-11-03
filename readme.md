@@ -13,8 +13,6 @@ locally to a BrowserWindow instance, without using a Menu.
 npm install --save electron-localshortcut
 ```
 
-## How it works
-
 ## Usage
 
 ```javascript
@@ -29,9 +27,16 @@ npm install --save electron-localshortcut
     console.log('You pressed ctrl & A');
   });
 
+  electronLocalshortcut.register(win, 'Ctrl+B', () => {
+    console.log('You pressed ctrl & B');
+  });
+
   console.log(
     electronLocalshortcut.isRegistered(win, 'Ctrl+A')
   );      // true
+
+  electronLocalshortcut.unregister(win, 'Ctrl+A');
+  electronLocalshortcut.unregisterAll(win);
 
 
 ```
