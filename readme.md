@@ -38,7 +38,7 @@ npm install --save electron-localshortcut
 
 ## Methods
 
-The `electron-localshortcut` module has th``e following methods:
+The `electron-localshortcut` module has following methods:
 
 ### `register(window, accelerator, callback)`
 

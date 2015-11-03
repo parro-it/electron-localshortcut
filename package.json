@@ -12,10 +12,8 @@
   },
   "author": "parro-it",
   "scripts": {
-    "test": "test-node",
+    "test": "test-collider",
     "debug": "debug",
-    "cover": "cover-node",
-    "watch": "watch-node",
     "release-minor": "release-minor",
     "release-patch": "release-patch",
     "lint": "lint",
@@ -24,14 +22,8 @@
   "eslintConfig": {
     "extends": "devenv"
   },
-  "babel": {
-    "stage": 4
-  },
+  "license": "MIT",
   "devDependencies": {
-    "tape-async": ">1.0.0"
-  },
-  "install-this-global-to-develop": {
-    "esenv": "^1.1.0"
-  },
-  "license": "MIT"
+    "electron-debug": "^0.3.0"
+  }
 }
