@@ -5,7 +5,6 @@ const electronLocalshortcut = require('..');
 const BrowserWindow = require('browser-window');
 const app = require('app');
 const Menu = require('menu');
-const MenuItem = require('menu-item');
 
 require('electron-debug')();
 
