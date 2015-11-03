@@ -1,49 +1,97 @@
+'use strict';
+
 const globalShortcut = require('global-shortcut');
 const BrowserWindow = require('browser-window');
-const windowsShortcuts = new WeakMap();
+const app = require('app');
+const windowsWithShortcuts = new WeakMap();
 
-function register(window, accelerator, callback) {
-  if (windowsShortcuts.has(window)) {
-    const shortcuts = windowsShortcuts.get(window);
+
+function unregisterAllShortcuts(win) {
+  const shortcuts = windowsWithShortcuts.get(win);
+  shortcuts.forEach( sc =>
+    globalShortcut.unregister(sc.accelerator)
+  );
+}
+
+function unregisterAll(win) {
+  if (!windowsWithShortcuts.has(win)) {
+    return;
+  }
+
+  unregisterAllShortcuts(win);
+  windowsWithShortcuts.delete(win);
+}
+
+function register(win, accelerator, callback) {
+  if (windowsWithShortcuts.has(win)) {
+    const shortcuts = windowsWithShortcuts.get(win);
     shortcuts.push({
       accelerator: accelerator,
       callback: callback
     });
   } else {
-    windowsShortcuts.set(window, [{
+    windowsWithShortcuts.set(win, [{
       accelerator: accelerator,
       callback: callback
     }]);
-
-    window.on('focus', () => {
-      const shortcuts = windowsShortcuts.get(window);
-      shortcuts.forEach( sc =>
-        globalShortcut.register(sc.accelerator, sc.callback)
-      );
-    });
-
-    window.on('blur', () => {
-      const shortcuts = windowsShortcuts.get(window);
-      shortcuts.forEach( sc =>
-        globalShortcut.unregister(sc.accelerator)
-      );
-    });
   }
 
-  if (BrowserWindow.getFocusedWindow() === window) {
+  if (BrowserWindow.getFocusedWindow() === win) {
     globalShortcut.register(accelerator, callback);
   }
 }
 
-function unregister(window, accelerator) {
+function indexOfShortcut(win, accelerator) {
+  if (!windowsWithShortcuts.has(win)) {
+    return -1;
+  }
+
+  const shortcuts = windowsWithShortcuts.get(win);
+  let shortcutToUnregisterIdx = -1;
+  shortcuts.some((s, idx) => {
+    if (s.accelerator === accelerator) {
+      shortcutToUnregisterIdx = idx;
+      return true;
+    }
+    return false;
+  });
+  return shortcutToUnregisterIdx;
 }
 
-function isRegistered(window, accelerator) {
+function unregister(win, accelerator) {
+  const shortcutToUnregisterIdx = indexOfShortcut(win, accelerator);
+
+  if (shortcutToUnregisterIdx !== -1) {
+    globalShortcut.unregister(accelerator);
+    const shortcuts = windowsWithShortcuts.get(win);
+    shortcuts.splice(shortcutToUnregisterIdx);
+  }
 }
 
-function unregisterAll(window) {
-
+function isRegistered(win, accelerator) {
+  return indexOfShortcut(win, accelerator) !== -1;
 }
+
+
+app.on('browser-window-focus', (e, win) => {
+  if (!windowsWithShortcuts.has(win)) {
+    return;
+  }
+
+  const shortcuts = windowsWithShortcuts.get(win);
+
+  shortcuts.forEach( sc =>
+    globalShortcut.register(sc.accelerator, sc.callback)
+  );
+});
+
+app.on('browser-window-blur', (e, win) => {
+  if (!windowsWithShortcuts.has(win)) {
+    return;
+  }
+
+  unregisterAllShortcuts(win);
+});
 
 module.exports = {
   register: register,

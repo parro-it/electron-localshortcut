@@ -10,14 +10,14 @@
   "engines": {
     "node": ">=4.1"
   },
-  "author": "parro-it",
+  "author": "andrea@parro.it",
   "scripts": {
     "test": "test-collider",
     "debug": "debug",
     "release-minor": "release-minor",
     "release-patch": "release-patch",
     "lint": "lint",
-    "prepublish": "check"
+    "prepublish": "lint"
   },
   "eslintConfig": {
     "extends": "devenv"
