@@ -1,10 +1,11 @@
 {
   "name": "electron-localshortcut",
-  "description": "",
+  "description": "register/unregister a keyboard shortcut locally to a BrowserWindow instance, without using a Menu",
   "repository": "https://github.com/parro-it/electron-localshortcut.git",
   "bugs": {
     "url": "https://github.com/parro-it/electron-localshortcut/issues"
   },
+  "keywords": ["electron", "shortcuts", "browser-window"],
   "version": "0.2.0",
   "main": "src/index.js",
   "engines": {
