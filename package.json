@@ -5,8 +5,12 @@
   "bugs": {
     "url": "https://github.com/parro-it/electron-localshortcut/issues"
   },
-  "keywords": ["electron", "shortcuts", "browser-window"],
-  "version": "0.2.0",
+  "keywords": [
+    "electron",
+    "shortcuts",
+    "browser-window"
+  ],
+  "version": "0.2.1",
   "main": "src/index.js",
   "engines": {
     "node": ">=4.1"
