@@ -77,6 +77,34 @@ Unregisters the shortcut of `accelerator` registered on the BrowserWindow instan
 
 Unregisters all of the shortcuts registered on the BrowserWindow instance.
 
+## Global shortcuts.   **NOT YET IMPLEMENTED**
+
+This set of method allow you to manage shortcuts that work on any window of your app. They are active if any window in the app is focused. They differ from [global-shortcuts](https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md) because they doesn't interfere with other app running on the same machine.
+
+### `register(accelerator, callback)`
+
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+* `callback` Function
+
+Registers a shortcut of `accelerator` on any focused BrowserWindow instance. The `callback` is called when the registered shortcut is pressed by the user, only if a BrowserWindow is focused.
+
+### `isRegistered(accelerator)`
+
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+
+Returns `true` or `false` depending on whether the shortcut `accelerator` is registered on all focused instances. If you registered the shortcut on a particular instance, this method
+return false.
+
+### `unregister(accelerator)`
+
+* `accelerator` [Accelerator](https://github.com/atom/electron/blob/master/docs/api/accelerator.md)
+
+Unregisters the shortcut of `accelerator` registered on all focused instances. This method does not unregister any shortcut you
+registered on a particular window instance.
+
+### `unregisterAll()`
+
+Unregisters all of the shortcuts registered on any focused BrowserWindow instance. This method does not unregister any shortcut you registered on a particular window instance.
 
 ## License
 
