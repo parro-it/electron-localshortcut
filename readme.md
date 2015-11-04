@@ -77,9 +77,13 @@ Unregisters the shortcut of `accelerator` registered on the BrowserWindow instan
 
 Unregisters all of the shortcuts registered on the BrowserWindow instance.
 
-## Global shortcuts.   **NOT YET IMPLEMENTED**
 
-This set of method allow you to manage shortcuts that work on any window of your app. They are active if any window in the app is focused. They differ from [global-shortcuts](https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md) because they doesn't interfere with other app running on the same machine.
+
+## Global shortcuts.
+
+This set of methods allow you to manage shortcuts that work on any window of your app. They are active only when a window in the app is focused.
+
+They differ from native [global-shortcuts](https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md) because they doesn't interfere with other apps running on the same machine.
 
 ### `register(accelerator, callback)`
 

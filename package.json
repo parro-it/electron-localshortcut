@@ -17,8 +17,7 @@
   },
   "author": "andrea@parro.it",
   "scripts": {
-    "test": "test-collider",
-    "debug": "debug",
+    "test": "electron test",
     "release-minor": "release-minor",
     "release-patch": "release-patch",
     "lint": "lint",

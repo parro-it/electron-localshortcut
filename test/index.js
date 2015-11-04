@@ -72,6 +72,33 @@ test('add details files', () => {
           );
         }
       }]
+    }, {
+      label: 'test all window',
+      submenu: [{
+        label: 'Unregister ALL',
+        click() {
+          electronLocalshortcut.unregister('Alt+A');
+        }
+      }, {
+        label: 'Unregister any ALL',
+        click() {
+          electronLocalshortcut.unregisterAll();
+        }
+      }, {
+        label: 'Register ALL',
+        click() {
+          electronLocalshortcut.register('Alt+A', () => {
+            process.stdout.write('ALL\n');
+          });
+        }
+      }, {
+        label: 'Check ALL',
+        click() {
+          process.stdout.write(
+            electronLocalshortcut.isRegistered('Alt+A') + '\n'
+          );
+        }
+      }]
     }];
 
     win2.setMenu(Menu.buildFromTemplate(template2));
