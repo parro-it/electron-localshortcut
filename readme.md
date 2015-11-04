@@ -5,6 +5,7 @@ locally to a BrowserWindow instance, without using a Menu.
 
 This is built to circumvent [this Electron issue](https://github.com/atom/electron/issues/1334).
 
+**Note:** Since this module internally use `global-shortcut` native module, you should not use it until the `ready` event of the app module is emitted. See [electron docs](https://github.com/atom/electron/edit/master/docs/api/global-shortcut.md).
 
 [![NPM module](https://img.shields.io/npm/v/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 [![NPM downloads](https://img.shields.io/npm/dt/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
@@ -79,7 +80,7 @@ Unregisters all of the shortcuts registered on the BrowserWindow instance.
 
 
 
-## Global shortcuts.
+## Global shortcuts
 
 This set of methods allow you to manage shortcuts that work on any window of your app. They are active only when a window in the app is focused.
 
