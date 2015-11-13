@@ -142,5 +142,7 @@ module.exports = {
   register: register,
   unregister: unregister,
   isRegistered: isRegistered,
-  unregisterAll: unregisterAll
+  unregisterAll: unregisterAll,
+  enableAll: registerAllShortcuts,
+  disableAll: unregisterAllShortcuts
 };

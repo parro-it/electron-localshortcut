@@ -65,6 +65,16 @@ test('add details files', () => {
           });
         }
       }, {
+        label: 'Disable shortcuts',
+        click() {
+          electronLocalshortcut.disableAll(win2);
+        }
+      }, {
+        label: 'Enable shortcuts',
+        click() {
+          electronLocalshortcut.enableAll(win2);
+        }
+      }, {
         label: 'Check C2',
         click() {
           process.stdout.write(

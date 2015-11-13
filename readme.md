@@ -78,6 +78,18 @@ Unregisters the shortcut of `accelerator` registered on the BrowserWindow instan
 
 Unregisters all of the shortcuts registered on the BrowserWindow instance.
 
+### `disableAll(window)`
+
+* `window` BrowserWindow instance
+
+Disable all of the shortcuts registered on the BrowserWindow instance.
+Registered shortcuts no more works on the `window` instance, but the module keep a reference on them. You can reactivate them later by calling `enableAll` method on the same window instance.
+
+### `enableAll(window)`
+
+* `window` BrowserWindow instance
+
+Enable all of the shortcuts registered on the BrowserWindow instance that you had previously disabled calling `disableAll` method.
 
 
 ## Global shortcuts
