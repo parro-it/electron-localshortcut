@@ -2,9 +2,10 @@
 
 const test = require('tape-async');
 const electronLocalshortcut = require('..');
-const BrowserWindow = require('browser-window');
-const app = require('app');
-const Menu = require('menu');
+const electron = require('electron');
+const BrowserWindow = electron.BrowserWindow;
+const app = electron.app;
+const Menu = electron.menu;
 
 require('electron-debug')();
 

@@ -1,8 +1,9 @@
 'use strict';
 
-const globalShortcut = require('global-shortcut');
-const BrowserWindow = require('browser-window');
-const app = require('app');
+const electron = require('electron');
+const globalShortcut = electron.globalShortcut;
+const BrowserWindow = electron.BrowserWindow;
+const app = electron.app;
 const windowsWithShortcuts = new WeakMap();
 
 // a placeholder to register shortcuts
