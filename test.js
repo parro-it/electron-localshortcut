@@ -6,7 +6,6 @@ const BrowserWindow = electron.BrowserWindow;
 const app = electron.app;
 const Menu = electron.Menu;
 
-require('electron-debug')();
 
 app.on('ready', () => {
   const win = new BrowserWindow({});
