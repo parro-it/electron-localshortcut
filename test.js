@@ -1,6 +1,6 @@
 'use strict';
 
-const electronLocalshortcut = require('..');
+const electronLocalshortcut = require('.');
 const electron = require('electron');
 const BrowserWindow = electron.BrowserWindow;
 const app = electron.app;
@@ -46,7 +46,7 @@ app.on('ready', () => {
   }];
 
   win.setMenu(Menu.buildFromTemplate(template));
-  win.loadUrl('about://blank');
+  win.loadURL('about://blank');
   win.show();
 
   const template2 = [{
@@ -111,7 +111,7 @@ app.on('ready', () => {
   }];
 
   win2.setMenu(Menu.buildFromTemplate(template2));
-  win2.loadUrl('about://blank');
+  win2.loadURL('about://blank');
   win2.show();
 });
 
