@@ -1,6 +1,6 @@
 {
   "name": "electron-localshortcut",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "register/unregister a keyboard shortcut locally to a BrowserWindow instance, without using a Menu",
   "repository": "parro-it/electron-localshortcut",
   "license": "MIT",
@@ -17,5 +17,7 @@
     "shortcuts",
     "browser-window"
   ],
-  "files": ["index.js"]
+  "files": [
+    "index.js"
+  ]
 }
