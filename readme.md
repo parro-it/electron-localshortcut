@@ -21,7 +21,7 @@ npm install --save electron-localshortcut
 
 ```javascript
   const electronLocalshortcut = require('electron-localshortcut');
-  const BrowserWindow = require('browser-window');
+  const BrowserWindow = require('electron').BrowserWindow;
 
   const win = new BrowserWindow();
   win.loadUrl('https://github.com');
