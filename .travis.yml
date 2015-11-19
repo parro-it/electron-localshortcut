@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - 'stable'
+sudo: false
+
+install:
+  - npm install -g eslint eslint-config-devenv babel-eslint
