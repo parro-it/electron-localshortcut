@@ -4,9 +4,9 @@
   "description": "register/unregister a keyboard shortcut locally to a BrowserWindow instance, without using a Menu",
   "repository": "parro-it/electron-localshortcut",
   "license": "MIT",
-  "main": "src/index.js",
   "author": "andrea@parro.it",
   "scripts": {
+    "start": "electron test.js",
     "test": "eslint ."
   },
   "eslintConfig": {
@@ -19,5 +19,6 @@
   ],
   "devDependencies": {
     "electron-debug": "^0.5.0"
-  }
+  },
+  "files": ["index.js"]
 }
