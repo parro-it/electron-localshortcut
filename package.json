@@ -20,5 +20,15 @@
   "devDependencies": {
     "electron-prebuilt": "^1.2.5",
     "xo": "^0.16.0"
+  },
+  "xo": {
+    "esnext": true,
+    "envs": [
+      "node",
+      "browser"
+    ],
+    "rules": {
+      "import/no-extraneous-dependencies": "off"
+    }
   }
 }
