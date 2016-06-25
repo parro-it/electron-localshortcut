@@ -7,10 +7,7 @@
   "author": "andrea@parro.it",
   "scripts": {
     "start": "electron test.js",
-    "test": "eslint ."
-  },
-  "eslintConfig": {
-    "extends": "eslint-config-devenv"
+    "test": "xo"
   },
   "keywords": [
     "electron",
@@ -19,5 +16,9 @@
   ],
   "files": [
     "index.js"
-  ]
+  ],
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.5",
+    "xo": "^0.16.0"
+  }
 }
