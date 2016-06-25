@@ -100,7 +100,7 @@ function unregister(win, accelerator) {
   if (shortcutToUnregisterIdx !== -1) {
     globalShortcut.unregister(accelerator);
     const shortcuts = windowsWithShortcuts.get(win);
-    shortcuts.splice(shortcutToUnregisterIdx);
+    shortcuts.splice(shortcutToUnregisterIdx, 1);
   }
 }
 
