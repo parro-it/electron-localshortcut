@@ -17,7 +17,7 @@ function isAccelerator(arg) {
 
 function unregisterAllShortcuts(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
-	if (shortcuts){
+	if (shortcuts) {
 		shortcuts.forEach(sc =>
 			globalShortcut.unregister(sc.accelerator)
 		);
@@ -26,7 +26,7 @@ function unregisterAllShortcuts(win) {
 
 function registerAllShortcuts(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
-	if (shortcuts){
+	if (shortcuts) {
 		shortcuts.forEach(sc =>
 			globalShortcut.register(sc.accelerator, sc.callback)
 		);
