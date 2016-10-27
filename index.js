@@ -17,17 +17,20 @@ function isAccelerator(arg) {
 
 function unregisterAllShortcuts(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
-	shortcuts.forEach(sc =>
-		globalShortcut.unregister(sc.accelerator)
-	);
+	if (shortcuts){
+		shortcuts.forEach(sc =>
+			globalShortcut.unregister(sc.accelerator)
+		);
+	}
 }
 
 function registerAllShortcuts(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
-
-	shortcuts.forEach(sc =>
-		globalShortcut.register(sc.accelerator, sc.callback)
-	);
+	if (shortcuts){
+		shortcuts.forEach(sc =>
+			globalShortcut.register(sc.accelerator, sc.callback)
+		);
+	}
 }
 
 function unregisterAll(win) {
