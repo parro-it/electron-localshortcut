@@ -21,27 +21,27 @@ npm install --save electron-localshortcut
 ## Usage
 
 ```javascript
-  const electronLocalshortcut = require('electron-localshortcut');
-  const BrowserWindow = require('electron').BrowserWindow;
+	const electronLocalshortcut = require('electron-localshortcut');
+	const BrowserWindow = require('electron').BrowserWindow;
 
-  const win = new BrowserWindow();
-  win.loadUrl('https://github.com');
-  win.show();
+	const win = new BrowserWindow();
+	win.loadUrl('https://github.com');
+	win.show();
 
-  electronLocalshortcut.register(win, 'Ctrl+A', () => {
-    console.log('You pressed ctrl & A');
-  });
+	electronLocalshortcut.register(win, 'Ctrl+A', () => {
+		console.log('You pressed ctrl & A');
+	});
 
-  electronLocalshortcut.register(win, 'Ctrl+B', () => {
-    console.log('You pressed ctrl & B');
-  });
+	electronLocalshortcut.register(win, 'Ctrl+B', () => {
+		console.log('You pressed ctrl & B');
+	});
 
-  console.log(
-    electronLocalshortcut.isRegistered(win, 'Ctrl+A')
-  );      // true
+	console.log(
+		electronLocalshortcut.isRegistered(win, 'Ctrl+A')
+	);      // true
 
-  electronLocalshortcut.unregister(win, 'Ctrl+A');
-  electronLocalshortcut.unregisterAll(win);
+	electronLocalshortcut.unregister(win, 'Ctrl+A');
+	electronLocalshortcut.unregisterAll(win);
 
 
 ```
@@ -128,7 +128,7 @@ Unregisters all of the shortcuts registered on any focused BrowserWindow instanc
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Andrea Parodi
+Copyright (c) 2016 Andrea Parodi
 
 
 
