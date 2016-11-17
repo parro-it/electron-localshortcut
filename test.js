@@ -7,7 +7,7 @@ app.on('ready', () => {
 	const win = new BrowserWindow({});
 	const win2 = new BrowserWindow({});
 
-	electronLocalshortcut.register(win, 'Ctrl+A', () => {
+	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
 		process.stdout.write('A\n');
 	});
 
@@ -49,6 +49,11 @@ app.on('ready', () => {
 			label: 'Unregister C2',
 			click() {
 				electronLocalshortcut.unregister(win2, 'Ctrl+C');
+			}
+		}, {
+			label: 'Register unvalid shortcut',
+			click() {
+				electronLocalshortcut.unregister(win2, 'Ctrl+Alt');
 			}
 		}, {
 			label: 'Register C2',
@@ -105,5 +110,6 @@ app.on('ready', () => {
 	win2.setMenu(Menu.buildFromTemplate(template2));
 	win2.loadURL('about://blank');
 	win2.show();
+	//win.webContents.openDevTools()
 });
 

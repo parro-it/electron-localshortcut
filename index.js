@@ -1,5 +1,5 @@
 'use strict';
-
+const isAccelerator = require('electron-is-accelerator');
 const electron = require('electron');
 
 const globalShortcut = electron.globalShortcut;
@@ -10,10 +10,6 @@ const windowsWithShortcuts = new WeakMap();
 // a placeholder to register shortcuts
 // on any window of the app.
 const ANY_WINDOW = {};
-
-function isAccelerator(arg) {
-	return typeof arg === 'string';
-}
 
 function unregisterAllShortcuts(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
@@ -49,12 +45,14 @@ function unregisterAll(win) {
 }
 
 function register(win, accelerator, callback) {
-	if (arguments.length === 2 && isAccelerator(win)) {
+	if (arguments.length === 2 && typeof win === 'string') {
 		// register shortcut for any window in the app
 		// win = accelerator, accelerator = callback
 		register(ANY_WINDOW, win, accelerator);
 		return;
 	}
+
+	checkAccelerator(accelerator);
 
 	if (windowsWithShortcuts.has(win)) {
 		const shortcuts = windowsWithShortcuts.get(win);
@@ -79,6 +77,7 @@ function indexOfShortcut(win, accelerator) {
 	if (!windowsWithShortcuts.has(win)) {
 		return -1;
 	}
+	checkAccelerator(accelerator);
 
 	const shortcuts = windowsWithShortcuts.get(win);
 	let shortcutToUnregisterIdx = -1;
@@ -92,13 +91,30 @@ function indexOfShortcut(win, accelerator) {
 	return shortcutToUnregisterIdx;
 }
 
+function checkAccelerator(accelerator) {
+	if (!isAccelerator(accelerator)) {
+
+		const w = {};
+		Error.captureStackTrace(w);
+		const msg = `
+WARNING: ${accelerator} is not a valid accelerator.
+
+${w.stack.split('\n').slice(4).join('\n')}
+`;
+		console.log(msg)
+	}
+}
+
 function unregister(win, accelerator) {
-	if (arguments.length === 1 && isAccelerator(win)) {
+	if (arguments.length === 1 && typeof win === 'string') {
 		// unregister shortcut for any window in the app
-		// win = accelerator
+		// win === accelerator
 		unregister(ANY_WINDOW, win);
 		return;
 	}
+
+	checkAccelerator(accelerator);
+
 	const shortcutToUnregisterIdx = indexOfShortcut(win, accelerator);
 
 	if (shortcutToUnregisterIdx !== -1) {
@@ -109,11 +125,13 @@ function unregister(win, accelerator) {
 }
 
 function isRegistered(win, accelerator) {
-	if (arguments.length === 1 && isAccelerator(win)) {
+	if (arguments.length === 1 && typeof win === 'string') {
 		// check shortcut for any window in the app
 		// win = accelerator
 		return isRegistered(ANY_WINDOW, win);
 	}
+
+	checkAccelerator(accelerator);
 
 	return indexOfShortcut(win, accelerator) !== -1;
 }

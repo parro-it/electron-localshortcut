@@ -20,5 +20,8 @@
   "devDependencies": {
     "electron": "^1.4.4",
     "xo": "^0.17.0"
+  },
+  "dependencies": {
+    "electron-is-accelerator": "^0.1.0"
   }
 }
