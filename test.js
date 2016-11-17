@@ -110,6 +110,6 @@ app.on('ready', () => {
 	win2.setMenu(Menu.buildFromTemplate(template2));
 	win2.loadURL('about://blank');
 	win2.show();
-	//win.webContents.openDevTools()
+	// win.webContents.openDevTools()
 });
 

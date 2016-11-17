@@ -1,6 +1,6 @@
 'use strict';
-const isAccelerator = require('electron-is-accelerator');
 const electron = require('electron');
+const isAccelerator = require('electron-is-accelerator');
 
 const globalShortcut = electron.globalShortcut;
 const BrowserWindow = electron.BrowserWindow;
@@ -93,7 +93,6 @@ function indexOfShortcut(win, accelerator) {
 
 function checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
-
 		const w = {};
 		Error.captureStackTrace(w);
 		const msg = `
@@ -101,7 +100,7 @@ WARNING: ${accelerator} is not a valid accelerator.
 
 ${w.stack.split('\n').slice(4).join('\n')}
 `;
-		console.log(msg)
+		console.error(msg);
 	}
 }
 
