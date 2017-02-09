@@ -65,6 +65,10 @@ function register(win, accelerator, callback) {
 			accelerator,
 			callback
 		}]);
+		win.on('close', () => {
+			unregisterAllShortcuts(win);
+			console.log('close event below', 2);
+		});
 	}
 
 	const focusedWin = BrowserWindow.getFocusedWindow();
@@ -157,6 +161,12 @@ app.on('browser-window-blur', (e, win) => {
 	}
 
 	unregisterAllShortcuts(win);
+});
+
+// all shortcuts should be unregistered by closing the window.
+// just for double check
+app.on('window-all-closed', () => {
+	unregisterAll();
 });
 
 module.exports = {

@@ -129,6 +129,3 @@ Unregisters all of the shortcuts registered on any focused BrowserWindow instanc
 The MIT License (MIT)
 
 Copyright (c) 2016 Andrea Parodi
-
-
-
