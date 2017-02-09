@@ -47,7 +47,7 @@ function unregisterAll(win) {
 function register(win, accelerator, callback) {
 	win.on('close', () => {
 		unregisterAllShortcuts(win);
-	})
+	});
 
 	if (arguments.length === 2 && typeof win === 'string') {
 		// register shortcut for any window in the app
@@ -165,7 +165,7 @@ app.on('browser-window-blur', (e, win) => {
 
 app.on('window-all-closed', () => {
 	unregisterAll();
-})
+});
 
 module.exports = {
 	register,
