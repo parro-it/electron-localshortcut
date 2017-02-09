@@ -112,4 +112,3 @@ app.on('ready', () => {
 	win2.show();
 	// win.webContents.openDevTools()
 });
-
