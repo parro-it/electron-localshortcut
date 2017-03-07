@@ -7,6 +7,9 @@ app.on('ready', () => {
 	const win = new BrowserWindow({});
 	const win2 = new BrowserWindow({});
 
+	// should raise a warning in console
+	electronLocalshortcut.register(win, 'C+C', () => {});
+
 	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
 		process.stdout.write('A\n');
 	});
