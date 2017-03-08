@@ -1,5 +1,7 @@
 # electron-localshortcut
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/parro-it/electron-localshortcut.svg)](https://greenkeeper.io/)
+
 A module to register/unregister a keyboard shortcut
 locally to a BrowserWindow instance, without using a Menu.
 
