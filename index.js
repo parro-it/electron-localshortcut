@@ -7,7 +7,7 @@ const BrowserWindow = electron.BrowserWindow;
 const app = electron.app;
 const windowsWithShortcuts = new WeakMap();
 
-// a placeholder to register shortcuts
+// A placeholder to register shortcuts
 // on any window of the app.
 const ANY_WINDOW = {};
 
@@ -31,7 +31,7 @@ function registerAllShortcuts(win) {
 
 function unregisterAll(win) {
 	if (win === undefined) {
-		// unregister shortcuts for any window in the app
+		// Unregister shortcuts for any window in the app
 		unregisterAll(ANY_WINDOW);
 		return;
 	}
@@ -46,7 +46,7 @@ function unregisterAll(win) {
 
 function register(win, accelerator, callback) {
 	if (arguments.length === 2 && typeof win === 'string') {
-		// register shortcut for any window in the app
+		// Register shortcut for any window in the app
 		// win = accelerator, accelerator = callback
 		register(ANY_WINDOW, win, accelerator);
 		return;
@@ -109,7 +109,7 @@ ${w.stack.split('\n').slice(4).join('\n')}
 
 function unregister(win, accelerator) {
 	if (arguments.length === 1 && typeof win === 'string') {
-		// unregister shortcut for any window in the app
+		// Unregister shortcut for any window in the app
 		// win === accelerator
 		unregister(ANY_WINDOW, win);
 		return;
@@ -128,7 +128,7 @@ function unregister(win, accelerator) {
 
 function isRegistered(win, accelerator) {
 	if (arguments.length === 1 && typeof win === 'string') {
-		// check shortcut for any window in the app
+		// Check shortcut for any window in the app
 		// win = accelerator
 		return isRegistered(ANY_WINDOW, win);
 	}
@@ -162,7 +162,7 @@ app.on('browser-window-blur', (e, win) => {
 	unregisterAllShortcuts(win);
 });
 
-// all shortcuts should be unregistered by closing the window.
+// All shortcuts should be unregistered by closing the window.
 // just for double check
 app.on('window-all-closed', () => {
 	unregisterAll();
