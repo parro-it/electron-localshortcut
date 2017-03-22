@@ -67,7 +67,6 @@ function register(win, accelerator, callback) {
 		}]);
 		win.on('close', () => {
 			unregisterAllShortcuts(win);
-			console.log('close event below', 2);
 		});
 	}
 
