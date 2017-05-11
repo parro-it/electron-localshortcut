@@ -44,6 +44,43 @@ function _disableWindowAndApp(win) {
 	disableAll(win);
 }
 
+function _indexOfShortcut(win, accelerator) {
+	if (!windowsWithShortcuts.has(win)) {
+		return -1;
+	}
+	_checkAccelerator(accelerator);
+
+	const shortcuts = windowsWithShortcuts.get(win);
+	let shortcutToUnregisterIdx = -1;
+	shortcuts.some((s, idx) => {
+		if (s.accelerator === accelerator) {
+			shortcutToUnregisterIdx = idx;
+			return true;
+		}
+		return false;
+	});
+	return shortcutToUnregisterIdx;
+}
+
+function _checkAccelerator(accelerator) {
+	if (!isAccelerator(accelerator)) {
+		const w = {};
+		Error.captureStackTrace(w);
+		const msg = `
+WARNING: ${accelerator} is not a valid accelerator.
+
+${w.stack.split('\n').slice(4).join('\n')}
+`;
+		console.error(msg);
+	}
+}
+
+/**
+ * Disable all of the shortcuts registered on the BrowserWindow instance.
+Registered shortcuts no more works on the `window` instance, but the module keep a reference on them. You can reactivate them later by calling `enableAll` method on the same window instance.
+ * @param  {BrowserWindow} win BrowserWindow instance
+ * @return {Undefined}
+ */
 function disableAll(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
 	if (shortcuts) {
@@ -51,6 +88,11 @@ function disableAll(win) {
 	}
 }
 
+/**
+ * Enable all of the shortcuts registered on the BrowserWindow instance that you had previously disabled calling `disableAll` method.
+ * @param  {BrowserWindow} win BrowserWindow instance
+ * @return {Undefined}
+ */
 function enableAll(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
 	if (shortcuts) {
@@ -58,6 +100,11 @@ function enableAll(win) {
 	}
 }
 
+/**
+ * Unregisters all of the shortcuts registered on any focused BrowserWindow instance. This method does not unregister any shortcut you registered on a particular window instance.
+ * @param  {BrowserWindow} win BrowserWindow instance
+ * @return {Undefined}
+ */
 function unregisterAll(win) {
 	if (win === undefined) {
 		// Unregister shortcuts for any window in the app
@@ -73,6 +120,13 @@ function unregisterAll(win) {
 	windowsWithShortcuts.delete(win);
 }
 
+/**
+* Registers the shortcut `accelerator`on the BrowserWindow instance.
+ * @param  {BrowserWindow} win - BrowserWindow instance to register. This argument could be omitted, in this case the function register the shortcut on all app windows.
+ * @param  {String} accelerator - the shortcut to register
+ * @param  {Function} callback    This function is called when the shortcut is pressed and the window is focused and not minimized.
+ * @return {Undefined}
+ */
 function register(win, accelerator, callback) {
 	if (arguments.length === 2 && typeof win === 'string') {
 		// Register shortcut for any window in the app
@@ -122,37 +176,12 @@ function register(win, accelerator, callback) {
 	}
 }
 
-function _indexOfShortcut(win, accelerator) {
-	if (!windowsWithShortcuts.has(win)) {
-		return -1;
-	}
-	_checkAccelerator(accelerator);
-
-	const shortcuts = windowsWithShortcuts.get(win);
-	let shortcutToUnregisterIdx = -1;
-	shortcuts.some((s, idx) => {
-		if (s.accelerator === accelerator) {
-			shortcutToUnregisterIdx = idx;
-			return true;
-		}
-		return false;
-	});
-	return shortcutToUnregisterIdx;
-}
-
-function _checkAccelerator(accelerator) {
-	if (!isAccelerator(accelerator)) {
-		const w = {};
-		Error.captureStackTrace(w);
-		const msg = `
-WARNING: ${accelerator} is not a valid accelerator.
-
-${w.stack.split('\n').slice(4).join('\n')}
-`;
-		console.error(msg);
-	}
-}
-
+/**
+ * Unregisters the shortcut of `accelerator` registered on the BrowserWindow instance.
+ * @param  {BrowserWindow} win - BrowserWindow instance to unregister. This argument could be omitted, in this case the function unregister the shortcut on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
+ * @param  {String} accelerator - the shortcut to unregister
+ * @return {Undefined}
+ */
 function unregister(win, accelerator) {
 	if (arguments.length === 1 && typeof win === 'string') {
 		// Unregister shortcut for any window in the app
@@ -172,6 +201,13 @@ function unregister(win, accelerator) {
 	}
 }
 
+/**
+ * Returns `true` or `false` depending on whether the shortcut `accelerator` is
+registered on `window`.
+ * @param  {BrowserWindow} win - BrowserWindow instance to check. This argument could be omitted, in this case the function returns whether the shortcut `accelerator` is registered on all app windows. If you registered the shortcut on a particular window instance, it return false.
+ * @param  {String} accelerator - the shortcut to check
+ * @return {Boolean} - if the shortcut `accelerator` is registered on `window`.
+ */
 function isRegistered(win, accelerator) {
 	if (arguments.length === 1 && typeof win === 'string') {
 		// Check shortcut for any window in the app
