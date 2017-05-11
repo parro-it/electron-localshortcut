@@ -8,29 +8,53 @@ const windowsWithShortcuts = new WeakMap();
 // on any window of the app.
 const ANY_WINDOW = {};
 
-function _registerShortcut(shortcut) {
-	console.log('_registerShortcut', {shortcut});
+function _enableShortcut(shortcut) {
+	console.log('_enableShortcut', {shortcut});
 	globalShortcut.register(shortcut.accelerator, shortcut.callback);
 	shortcut.registered = true;
 }
 
-function _unregisterShortcut(shortcut) {
-	console.log('_unregisterShortcut', {shortcut});
+function _disableShortcut(shortcut) {
+	console.log('_disableShortcut', {shortcut});
 	globalShortcut.unregister(shortcut.accelerator);
 	shortcut.registered = false;
 }
 
-function unregisterAllShortcuts(win) {
+function _enableWindowAndApp(win) {
+	if (windowsWithShortcuts.has(ANY_WINDOW)) {
+		enableAll(ANY_WINDOW);
+	}
+
+	if (!windowsWithShortcuts.has(win)) {
+		return;
+	}
+
+	enableAll(win);
+}
+
+function _disableWindowAndApp(win) {
+	if (windowsWithShortcuts.has(ANY_WINDOW)) {
+		disableAll(ANY_WINDOW);
+	}
+
+	if (!windowsWithShortcuts.has(win)) {
+		return;
+	}
+
+	disableAll(win);
+}
+
+function disableAll(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
 	if (shortcuts) {
-		shortcuts.forEach(_unregisterShortcut);
+		shortcuts.forEach(_disableShortcut);
 	}
 }
 
-function registerAllShortcuts(win) {
+function enableAll(win) {
 	const shortcuts = windowsWithShortcuts.get(win);
 	if (shortcuts) {
-		shortcuts.forEach(_registerShortcut);
+		shortcuts.forEach(_enableShortcut);
 	}
 }
 
@@ -45,32 +69,8 @@ function unregisterAll(win) {
 		return;
 	}
 
-	unregisterAllShortcuts(win);
+	disableAll(win);
 	windowsWithShortcuts.delete(win);
-}
-
-function registerWindowAndAppShortcuts(e, win) {
-	if (windowsWithShortcuts.has(ANY_WINDOW)) {
-		registerAllShortcuts(ANY_WINDOW);
-	}
-
-	if (!windowsWithShortcuts.has(win)) {
-		return;
-	}
-
-	registerAllShortcuts(win);
-}
-
-function unregisterWindowAndAppShortcuts(e, win) {
-	if (windowsWithShortcuts.has(ANY_WINDOW)) {
-		unregisterAllShortcuts(ANY_WINDOW);
-	}
-
-	if (!windowsWithShortcuts.has(win)) {
-		return;
-	}
-
-	unregisterAllShortcuts(win);
 }
 
 function register(win, accelerator, callback) {
@@ -81,16 +81,16 @@ function register(win, accelerator, callback) {
 		return;
 	}
 
-	checkAccelerator(accelerator);
+	_checkAccelerator(accelerator);
 
 	const newShortcut = {accelerator, callback, registered: false};
 
 	const _unregister = () => {
-		unregisterWindowAndAppShortcuts(null, win);
+		_disableWindowAndApp(win);
 	};
 
 	const _register = () => {
-		registerWindowAndAppShortcuts(null, win);
+		_enableWindowAndApp(win);
 	};
 
 	if (windowsWithShortcuts.has(win)) {
@@ -122,11 +122,11 @@ function register(win, accelerator, callback) {
 	}
 }
 
-function indexOfShortcut(win, accelerator) {
+function _indexOfShortcut(win, accelerator) {
 	if (!windowsWithShortcuts.has(win)) {
 		return -1;
 	}
-	checkAccelerator(accelerator);
+	_checkAccelerator(accelerator);
 
 	const shortcuts = windowsWithShortcuts.get(win);
 	let shortcutToUnregisterIdx = -1;
@@ -140,7 +140,7 @@ function indexOfShortcut(win, accelerator) {
 	return shortcutToUnregisterIdx;
 }
 
-function checkAccelerator(accelerator) {
+function _checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
 		const w = {};
 		Error.captureStackTrace(w);
@@ -161,12 +161,12 @@ function unregister(win, accelerator) {
 		return;
 	}
 
-	checkAccelerator(accelerator);
+	_checkAccelerator(accelerator);
 
-	const shortcutToUnregisterIdx = indexOfShortcut(win, accelerator);
+	const shortcutToUnregisterIdx = _indexOfShortcut(win, accelerator);
 
 	if (shortcutToUnregisterIdx !== -1) {
-		_unregisterShortcut(accelerator);
+		_disableShortcut(accelerator);
 		const shortcuts = windowsWithShortcuts.get(win);
 		shortcuts.splice(shortcutToUnregisterIdx, 1);
 	}
@@ -179,25 +179,23 @@ function isRegistered(win, accelerator) {
 		return isRegistered(ANY_WINDOW, win);
 	}
 
-	checkAccelerator(accelerator);
+	_checkAccelerator(accelerator);
 
-	return indexOfShortcut(win, accelerator) !== -1;
+	return _indexOfShortcut(win, accelerator) !== -1;
 }
 
-app.on('browser-window-focus', registerWindowAndAppShortcuts);
-app.on('browser-window-blur', unregisterWindowAndAppShortcuts);
+app.on('browser-window-focus', (_, win) => _enableWindowAndApp(win));
+app.on('browser-window-blur', (_, win) => _disableWindowAndApp(win));
 
 // All shortcuts should be unregistered by closing the window.
 // just for double check
-app.on('window-all-closed', () => {
-	unregisterAll();
-});
+app.on('window-all-closed', unregisterAll);
 
 module.exports = {
 	register,
 	unregister,
 	isRegistered,
 	unregisterAll,
-	enableAll: registerAllShortcuts,
-	disableAll: unregisterAllShortcuts
+	enableAll,
+	disableAll
 };
