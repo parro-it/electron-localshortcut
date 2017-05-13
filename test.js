@@ -65,10 +65,23 @@ test('shortcut is enabled on registering if window is focused', async t => {
 
 test('shortcut is not enabled on registering if window is not focused', async t => {
 	const win2 = new BrowserWindow();
-	const callbackCalled = new Promise(resolve => shortcuts.register(win2, 'Ctrl+A', resolve));
-	mock.keypress('Ctrl+A');
-	const err = await pTimeout(callbackCalled, 200).catch(err => err);
-	t.is(err.message, 'Promise timed out after 200 milliseconds');
+	const callbackCalled = new Promise(resolve => shortcuts.register(win2, 'Ctrl+B', resolve));
+	mock.keypress('Ctrl+B');
+	const err = await pTimeout(callbackCalled, 400).catch(err => err);
+	t.is(err.message, 'Promise timed out after 400 milliseconds');
+	win2.close();
+});
+
+test('shortcut is not enabled on registering if window is minimized', async t => {
+	const win2 = new BrowserWindow();
+	win2.focus();
+	win2.minimize();
+	await delay(100);
+
+	const callbackCalled = new Promise(resolve => shortcuts.register(win2, 'Ctrl+V', resolve));
+	mock.keypress('Ctrl+V');
+	const err = await pTimeout(callbackCalled, 400).catch(err => err);
+	t.is(err.message, 'Promise timed out after 400 milliseconds');
 	win2.close();
 });
 
