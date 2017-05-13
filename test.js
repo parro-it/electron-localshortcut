@@ -1,116 +1,65 @@
 'use strict';
+const {BrowserWindow, app} = require('electron');
+const test = require('tape-async');
+const pEvent = require('p-event');
 
-const {BrowserWindow, app, Menu} = require('electron');
-const electronLocalshortcut = require('.');
+const shortcuts = require('.');
 
-app.on('ready', () => {
-	const win = new BrowserWindow({});
-	const win2 = new BrowserWindow({});
+let win;
+const mock = createMock();
 
-	// Should raise a warning in console
-	electronLocalshortcut.register(win, 'C+C', () => {});
+function createMock() {
+	const shortcutsRegister = {};
 
-	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
-		process.stdout.write('A\n');
-	});
+	const enableShortcut = shortcut => {
+		shortcutsRegister[shortcut.accelerator] = shortcut.callback;
+	};
 
-	electronLocalshortcut.register(win, 'Ctrl+B', () => {
-		process.stdout.write('B\n');
-	});
+	const disableShortcut = shortcut => {
+		delete shortcutsRegister[shortcut.accelerator];
+	};
 
-	electronLocalshortcut.register(win2, 'Ctrl+A', () => {
-		process.stdout.write('A2\n');
-	});
+	const keypress = keys => {
+		const shortcut = shortcutsRegister[keys];
+		if (shortcut) {
+			shortcut();
+		}
+	};
 
-	electronLocalshortcut.register(win2, 'Ctrl+B', () => {
-		process.stdout.write('B2\n');
-	});
+	shortcuts.__mockup(enableShortcut, disableShortcut);
 
-	electronLocalshortcut.register(win2, 'Ctrl+C', () => {
-		process.stdout.write('C2\n');
-	});
+	return {keypress};
+}
 
-	const template = [{
-		label: 'test',
-		submenu: [
-			{
-				label: 'Unregister all shortcuts',
-				click() {
-					electronLocalshortcut.unregisterAll(win);
-				}
-			}
-		]
-	}];
+function appReady() {
+	if (app.isReady()) {
+		return Promise.resolve();
+	}
+	return pEvent(app, 'ready');
+}
 
-	win.setMenu(Menu.buildFromTemplate(template));
-	win.loadURL('about://blank');
+test('exports an appReady function', async t => {
+	t.is(typeof shortcuts, 'object');
+});
+
+test('appReady return a promise that resolve when electron app is ready', async () => {
+	await appReady();
+	// We could create a window, because the app is ready
+	win = new BrowserWindow();
+	win.loadURL('https://example.com');
 	win.show();
+});
 
-	const template2 = [{
-		label: 'test',
-		submenu: [{
-			label: 'Unregister C2',
-			click() {
-				electronLocalshortcut.unregister(win2, 'Ctrl+C');
-			}
-		}, {
-			label: 'Register unvalid shortcut',
-			click() {
-				electronLocalshortcut.unregister(win2, 'Ctrl+Alt');
-			}
-		}, {
-			label: 'Register C2',
-			click() {
-				electronLocalshortcut.register(win2, 'Ctrl+C', () => {
-					process.stdout.write('C2\n');
-				});
-			}
-		}, {
-			label: 'Disable shortcuts',
-			click() {
-				electronLocalshortcut.disableAll(win2);
-			}
-		}, {
-			label: 'Enable shortcuts',
-			click() {
-				electronLocalshortcut.enableAll(win2);
-			}
-		}, {
-			label: 'Check C2',
-			click() {
-				const isRegistered = electronLocalshortcut.isRegistered(win2, 'Ctrl+C');
-				process.stdout.write(`${isRegistered}\n`);
-			}
-		}]
-	}, {
-		label: 'test all window',
-		submenu: [{
-			label: 'Unregister ALL',
-			click() {
-				electronLocalshortcut.unregister('Alt+A');
-			}
-		}, {
-			label: 'Unregister any ALL',
-			click() {
-				electronLocalshortcut.unregisterAll();
-			}
-		}, {
-			label: 'Register ALL',
-			click() {
-				electronLocalshortcut.register('Alt+A', () => {
-					process.stdout.write('ALL\n');
-				});
-			}
-		}, {
-			label: 'Check ALL',
-			click() {
-				const isRegistered = electronLocalshortcut.isRegistered('Alt+A');
-				process.stdout.write(`${isRegistered}\n`);
-			}
-		}]
-	}];
+test('shortcut is enabled on registering if window is focused', async t => {
+	win.focus();
 
-	win2.setMenu(Menu.buildFromTemplate(template2));
-	win2.loadURL('about://blank');
-	win2.show();
+	const callbackCalled = new Promise(resolve => shortcuts.register(win, 'Ctrl+A', resolve));
+	mock.keypress('Ctrl+A');
+	t.is(await callbackCalled, undefined);
+});
+
+test('app quit', t => {
+	app.on('window-all-closed', () => app.quit());
+	t.end();
+	win.close();
 });

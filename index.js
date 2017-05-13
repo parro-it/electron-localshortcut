@@ -8,16 +8,19 @@ const windowsWithShortcuts = new WeakMap();
 // on any window of the app.
 const ANY_WINDOW = {};
 
-function _enableShortcut(shortcut) {
-	console.log('_enableShortcut', {shortcut});
+let _enableShortcut = shortcut => {
 	globalShortcut.register(shortcut.accelerator, shortcut.callback);
 	shortcut.registered = true;
-}
+};
 
-function _disableShortcut(shortcut) {
-	console.log('_disableShortcut', {shortcut});
+let _disableShortcut = shortcut => {
 	globalShortcut.unregister(shortcut.accelerator);
 	shortcut.registered = false;
+};
+
+function __mockup(enableShortcut, disableShortcut) {
+	_enableShortcut = enableShortcut;
+	_disableShortcut = disableShortcut;
 }
 
 function _enableWindowAndApp(win) {
@@ -233,5 +236,6 @@ module.exports = {
 	isRegistered,
 	unregisterAll,
 	enableAll,
-	disableAll
+	disableAll,
+	__mockup
 };

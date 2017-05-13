@@ -7,8 +7,8 @@
   "author": "andrea@parro.it",
   "scripts": {
     "doc": "documentation readme index.js --section=API",
-    "start": "electron test.js",
-    "test": "xo"
+    "start": "electron example.js",
+    "test": "electron test.js | faucet && xo"
   },
   "keywords": [
     "electron",
@@ -21,6 +21,9 @@
   "devDependencies": {
     "documentation": "^4.0.0-rc.1",
     "electron": "^1.6.7",
+    "faucet": "^0.0.1",
+    "p-event": "^1.1.0",
+    "tape-async": "^2.3.0",
     "xo": "^0.19.0"
   },
   "dependencies": {
