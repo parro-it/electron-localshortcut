@@ -50,7 +50,7 @@ async function shortcutIsNotEnabledOnRegistering(key, win) {
 async function shortcutIsEnabledOnRegistering(key, win) {
 	const callbackCalled = new Promise(resolve => shortcuts.register(win, key, resolve));
 	mock.keypress(key);
-	return undefined === await pTimeout(callbackCalled, 100);
+	return undefined === await pTimeout(callbackCalled, 400);
 }
 
 test('exports an shortcuts object', async t => {
@@ -86,7 +86,7 @@ test('shortcut is not enabled on registering if window is minimized', async t =>
 
 test('shortcut is not enabled on registering if window is not showed', async t => {
 	const win2 = new BrowserWindow({show: false});
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+F', win2));
+	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+E', win2));
 	win2.close();
 });
 
@@ -95,7 +95,7 @@ test('shortcut is not enabled on registering if window is hidden', async t => {
 	t.true(win2.isVisible());
 	win2.hide();
 	t.false(win2.isVisible());
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+F', win2));
+	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+R', win2));
 	win2.close();
 });
 
