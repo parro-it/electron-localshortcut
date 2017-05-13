@@ -2,6 +2,8 @@
 const {BrowserWindow, app} = require('electron');
 const test = require('tape-async');
 const pEvent = require('p-event');
+const delay = require('delay');
+const pTimeout = require('p-timeout');
 
 const shortcuts = require('.');
 
@@ -51,11 +53,23 @@ test('appReady return a promise that resolve when electron app is ready', async 
 });
 
 test('shortcut is enabled on registering if window is focused', async t => {
-	win.focus();
+	const win2 = new BrowserWindow();
+	win2.focus();
+	await delay(100);
 
-	const callbackCalled = new Promise(resolve => shortcuts.register(win, 'Ctrl+A', resolve));
+	const callbackCalled = new Promise(resolve => shortcuts.register(win2, 'Ctrl+A', resolve));
 	mock.keypress('Ctrl+A');
-	t.is(await callbackCalled, undefined);
+	t.is(await pTimeout(callbackCalled, 100), undefined);
+	win2.close();
+});
+
+test('shortcut is not enabled on registering if window is not focused', async t => {
+	const win2 = new BrowserWindow();
+	const callbackCalled = new Promise(resolve => shortcuts.register(win2, 'Ctrl+A', resolve));
+	mock.keypress('Ctrl+A');
+	const err = await pTimeout(callbackCalled, 200).catch(err => err);
+	t.is(err.message, 'Promise timed out after 200 milliseconds');
+	win2.close();
 });
 
 test('app quit', t => {

@@ -19,10 +19,12 @@
     "index.js"
   ],
   "devDependencies": {
+    "delay": "^2.0.0",
     "documentation": "^4.0.0-rc.1",
     "electron": "^1.6.7",
     "faucet": "^0.0.1",
     "p-event": "^1.1.0",
+    "p-timeout": "^1.0.0",
     "tape-async": "^2.3.0",
     "xo": "^0.19.0"
   },
