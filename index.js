@@ -1,7 +1,9 @@
 'use strict';
 const {globalShortcut, BrowserWindow, app} = require('electron');
 const isAccelerator = require('electron-is-accelerator');
+const _debug = require('debug');
 
+const debug = _debug('electron-localshortcut');
 const windowsWithShortcuts = new WeakMap();
 
 // A placeholder to register shortcuts
@@ -173,8 +175,12 @@ function register(win, accelerator, callback) {
 	const registeringAppShortcut = win === ANY_WINDOW;
 	const appHasFocus = focusedWin !== null;
 	const registeringWindowHasFocus = focusedWin === win;
+	const registeringWindowIsMinimized = () => focusedWin.isMinimized();
 
-	if ((registeringAppShortcut && appHasFocus) || registeringWindowHasFocus) {
+	debug({registeringAppShortcut, appHasFocus, registeringWindowHasFocus});
+
+	if ((registeringAppShortcut && appHasFocus) ||
+		(registeringWindowHasFocus && !registeringWindowIsMinimized())) {
 		_register();
 	}
 }

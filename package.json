@@ -8,7 +8,8 @@
   "scripts": {
     "doc": "documentation readme index.js --section=API",
     "start": "electron example.js",
-    "test": "electron test.js | faucet && xo"
+    "test": "electron test.js | faucet && xo",
+    "tape": "DEBUG=electron-localshortcut electron test.js"
   },
   "keywords": [
     "electron",
@@ -19,6 +20,7 @@
     "index.js"
   ],
   "devDependencies": {
+    "debug": "^2.6.6",
     "delay": "^2.0.0",
     "documentation": "^4.0.0-rc.1",
     "electron": "^1.6.7",
