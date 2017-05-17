@@ -9,6 +9,8 @@ const shortcuts = require('.');
 let win;
 const mock = createMock();
 
+const pEvent = require('p-event');
+
 function createMock() {
 	const shortcutsRegister = {};
 
@@ -62,12 +64,13 @@ test('appReady return a promise that resolve when electron app is ready', before
 test('shortcut is enabled on registering if window is focused', async t => {
 	const win2 = new BrowserWindow();
 	await focusWindow(win2);
-	t.true(shortcutIsEnabledOnRegistering('Ctrl+A', win2));
+	t.true(await shortcutIsEnabledOnRegistering('Ctrl+A', win2));
 	win2.close();
 });
 
 test('shortcut is not enabled on registering if window is not focused', async t => {
 	const win2 = new BrowserWindow();
+	await focusWindow(win);
 	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+B', win2));
 	win2.close();
 });
@@ -102,5 +105,8 @@ test('shortcut is not enabled on registering if window is hidden', async t => {
 test('app quit', t => {
 	app.on('window-all-closed', () => app.quit());
 	t.end();
-	win.close();
+
+	for (const w of BrowserWindow.getAllWindows()) {
+		w.close();
+	}
 });
