@@ -82,6 +82,76 @@ test('exports an shortcuts object', async t => {
 
 test('appReady return a promise that resolve when electron app is ready', beforeAll);
 
+test('shortcut is disabled when window loose focus', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	await focusWindow(winHolder);
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasNotPressed(shortcutPressed));
+
+	win2.close();
+});
+
+test('shortcut is disabled when window is hidden', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	win2.hide();
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasNotPressed(shortcutPressed));
+
+	win2.close();
+});
+
+test('shortcut is enabled when window is focused again', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	await focusWindow(winHolder);
+	await focusWindow(win2);
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasPressed(shortcutPressed));
+
+	win2.close();
+});
+
+test('shortcut is enabled when window is showed again', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	win2.hide();
+	win2.showInactive();
+	await windowVisible(win2);
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasPressed(shortcutPressed));
+
+	win2.close();
+});
+
+test('shortcut is disabled when window is minified', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	await minimizeWindow(win2);
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasNotPressed(shortcutPressed));
+
+	win2.close();
+});
+
+test('shortcut is enabled when window is restored', async t => {
+	const win2 = new BrowserWindow();
+	await focusWindow(win2);
+	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
+	await minimizeWindow(win2);
+	await restoreWindow(win2);
+	mock.keypress('Alt+A');
+	t.true(await shortcutWasPressed(shortcutPressed));
+
+	win2.close();
+});
+
 test('shortcut is enabled on registering if window is focused', async t => {
 	const win2 = new BrowserWindow();
 	await focusWindow(win2);
