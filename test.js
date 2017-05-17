@@ -9,8 +9,6 @@ const shortcuts = require('.');
 let win;
 const mock = createMock();
 
-const pEvent = require('p-event');
-
 function createMock() {
 	const shortcutsRegister = {};
 
