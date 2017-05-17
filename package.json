@@ -9,6 +9,7 @@
     "doc": "documentation readme index.js --section=API",
     "start": "electron example.js",
     "test": "electron test.js | faucet && xo",
+    "tape": "electron test.js",
     "tape": "DEBUG=electron-localshortcut electron test.js"
   },
   "keywords": [
