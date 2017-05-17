@@ -2,7 +2,7 @@
 const {BrowserWindow, app} = require('electron');
 const test = require('tape-async');
 const pTimeout = require('p-timeout');
-const {appReady, focusWindow, minimizeWindow} = require('p-electron');
+const {appReady, focusWindow, minimizeWindow, restoreWindow} = require('p-electron');
 
 const shortcuts = require('.');
 
@@ -97,6 +97,16 @@ test('shortcut is not enabled on registering if window is hidden', async t => {
 	win2.hide();
 	t.false(win2.isVisible());
 	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+R', win2));
+	win2.close();
+});
+
+test('shortcut is not enabled on registering if window is never showed, but minimized and restored', async t => {
+	const win2 = new BrowserWindow({show: false});
+	t.false(win2.isVisible());
+	await minimizeWindow(win2);
+	await restoreWindow(win2);
+	t.false(win2.isVisible());
+	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+J', win2));
 	win2.close();
 });
 
