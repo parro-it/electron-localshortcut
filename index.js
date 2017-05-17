@@ -173,11 +173,11 @@ function register(win, accelerator, callback) {
 
 	const focusedWin = BrowserWindow.getFocusedWindow();
 	const registeringAppShortcut = win === ANY_WINDOW;
-	const appHasFocus = focusedWin !== null;
+	const appHasFocus = focusedWin !== null && focusedWin.isVisible();
 	const registeringWindowHasFocus = focusedWin === win;
 	const registeringWindowIsMinimized = () => focusedWin.isMinimized();
-
-	debug({registeringAppShortcut, appHasFocus, registeringWindowHasFocus});
+	debug(registeringWindowHasFocus, win && win === ANY_WINDOW ? 'ANY_WINDOW' : win.getTitle(), focusedWin && focusedWin.getTitle());
+	debug(JSON.stringify({registeringAppShortcut, appHasFocus, registeringWindowHasFocus}));
 
 	if ((registeringAppShortcut && appHasFocus) ||
 		(registeringWindowHasFocus && !registeringWindowIsMinimized())) {
