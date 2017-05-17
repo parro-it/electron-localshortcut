@@ -40,30 +40,40 @@ async function beforeAll() {
 	winHolder.show();
 }
 
-async function shortcutIsNotEnabledOnRegistering(key, win) {
-	const callbackCalled = new Promise(resolve => shortcuts.register(win, key, resolve));
-	mock.keypress(key);
-	const err = await pTimeout(callbackCalled, 400).catch(err => err);
+const promiseForShortcutPressed = (win, key) => new Promise(resolve => shortcuts.register(win, key, resolve));
+const promiseForAppShortcutPressed = key => new Promise(resolve => shortcuts.register(key, resolve));
+
+async function shortcutWasPressed(shortcutPressed) {
+	return undefined === await pTimeout(shortcutPressed, 400);
+}
+
+async function shortcutWasNotPressed(shortcutPressed) {
+	const err = await pTimeout(shortcutPressed, 400).catch(err => err);
 	return err instanceof Error && err.message === 'Promise timed out after 400 milliseconds';
+}
+
+async function shortcutIsNotEnabledOnRegistering(key, win) {
+	const shortcutPressed = promiseForShortcutPressed(win, key);
+	mock.keypress(key);
+	return shortcutWasNotPressed(shortcutPressed);
 }
 
 async function shortcutIsEnabledOnRegistering(key, win) {
-	const callbackCalled = new Promise(resolve => shortcuts.register(win, key, resolve));
+	const shortcutPressed = promiseForShortcutPressed(win, key);
 	mock.keypress(key);
-	return undefined === await pTimeout(callbackCalled, 400);
+	return shortcutWasPressed(shortcutPressed);
 }
 
 async function appShortcutIsNotEnabledOnRegistering(key) {
-	const callbackCalled = new Promise(resolve => shortcuts.register(key, resolve));
+	const shortcutPressed = promiseForAppShortcutPressed(key);
 	mock.keypress(key);
-	const err = await pTimeout(callbackCalled, 400).catch(err => err);
-	return err instanceof Error && err.message === 'Promise timed out after 400 milliseconds';
+	return shortcutWasNotPressed(shortcutPressed);
 }
 
 async function appShortcutIsEnabledOnRegistering(key) {
-	const callbackCalled = new Promise(resolve => shortcuts.register(key, resolve));
+	const shortcutPressed = promiseForAppShortcutPressed(key);
 	mock.keypress(key);
-	return undefined === await pTimeout(callbackCalled, 400);
+	return shortcutWasPressed(shortcutPressed);
 }
 
 test('exports an shortcuts object', async t => {
