@@ -25,7 +25,7 @@
     "documentation": "^4.0.0-rc.1",
     "electron": "^1.6.7",
     "faucet": "^0.0.1",
-    "p-electron": "^0.6.0",
+    "p-electron": "^0.7.0",
     "p-event": "^1.1.0",
     "p-timeout": "^1.0.0",
     "tape-async": "^2.3.0",
