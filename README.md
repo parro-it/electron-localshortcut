@@ -125,4 +125,4 @@ Returns **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Andrea Parodi
+Copyright (c) 2017 Andrea Parodi
