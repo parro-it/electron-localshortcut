@@ -46,8 +46,8 @@ npm install --save electron-localshortcut
 
 # App shortcuts.
 
-isRegistered, unregisterAll, unregister and register allow the window argument to be omitted.
-When omitted, this set of methods allow you to manage shortcuts that work on any window of your app. They are active only when a window of your app is focused.
+If you omit the window argument of `isRegistered`, `unregisterAll`, `unregister` and `register` methods, the shortcut is registered as an app shortcut.
+It is active when any window of the app is focused.
 
 They differ from native [global-shortcuts](https://github.com/atom/electron/blob/master/docs/api/global-shortcut.md) because they doesn't interfere with other apps running on the same machine.
 
