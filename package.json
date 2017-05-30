@@ -8,7 +8,8 @@
   "scripts": {
     "doc": "documentation readme index.js --section=API",
     "start": "electron example.js",
-    "test": "electron test.js | faucet && xo",
+    "test-local": "electron test.js | faucet && xo",
+    "test": "xo",
     "tape": "DEBUG=electron-localshortcut electron test.js"
   },
   "keywords": [
