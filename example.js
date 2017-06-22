@@ -46,8 +46,6 @@ app.on('ready', () => {
 	win.loadURL('about://blank');
 	win.show();
 
-
-
 	const template2 = [{
 		label: 'test',
 		submenu: [{
