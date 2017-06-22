@@ -46,6 +46,8 @@ app.on('ready', () => {
 	win.loadURL('about://blank');
 	win.show();
 
+
+
 	const template2 = [{
 		label: 'test',
 		submenu: [{
@@ -81,6 +83,13 @@ app.on('ready', () => {
 				const isRegistered = electronLocalshortcut.isRegistered(win2, 'Ctrl+C');
 				process.stdout.write(`${isRegistered}\n`);
 			}
+		}, {
+			label: 'Check existing global shortcut',
+			click() {
+				electronLocalshortcut.register(win2, 'Ctrl+E', () => {
+					console.log('Control E !');
+				});
+			}
 		}]
 	}, {
 		label: 'test all window',
@@ -113,4 +122,11 @@ app.on('ready', () => {
 	win2.setMenu(Menu.buildFromTemplate(template2));
 	win2.loadURL('about://blank');
 	win2.show();
+	win2.openDevTools();
+	win2.webContents.executeJavaScript(`
+		document.body.innerHTML = '<textarea></textarea>';
+		document.addEventListener('keydown', e => {
+			console.log((e.ctrlKey ? 'Ctrl + ' : '') +e.key);
+		});
+	`);
 });
