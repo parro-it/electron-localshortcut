@@ -185,8 +185,7 @@ function register(win, accelerator, callback) {
 
 	if ((registeringAppShortcut && appHasFocus) ||
 		(registeringWindowHasFocus && !registeringWindowIsMinimized())) {
-		win.on('show', _register('the window was focused at shortcut registration.'));
-		_register();
+		_register('the window was focused at shortcut registration.');
 	}
 }
 
