@@ -124,7 +124,7 @@ app.on('ready', () => {
 	win2.webContents.executeJavaScript(`
 		document.body.innerHTML = '<textarea></textarea>';
 		document.addEventListener('keydown', e => {
-			console.log((e.ctrlKey ? 'Ctrl + ' : '') +e.key);
+			console.log(e);
 		});
 	`);
 });

@@ -1,75 +1,18 @@
 'use strict';
-const {globalShortcut, BrowserWindow, app} = require('electron');
+const {BrowserWindow, app} = require('electron');
 const isAccelerator = require('electron-is-accelerator');
+const equals = require('keyboardevents-areequal');
+const {toKeyEvent} = require('keyboardevent-from-electron-accelerator');
+const insp = require('insp');
 const _debug = require('debug');
 
 const debug = _debug('electron-localshortcut');
-const windowsWithShortcuts = new WeakMap();
 
 // A placeholder to register shortcuts
 // on any window of the app.
 const ANY_WINDOW = {};
 
-let _enableShortcut = shortcut => {
-	debug(`Calling globalShortcut.register(${shortcut.accelerator}, ${shortcut.callback.name})`);
-	globalShortcut.register(shortcut.accelerator, shortcut.callback);
-	shortcut.registered = true;
-};
-
-let _disableShortcut = shortcut => {
-	debug(`Calling globalShortcut.unregister(${shortcut.accelerator})`);
-	globalShortcut.unregister(shortcut.accelerator);
-	shortcut.registered = false;
-};
-
-function __mockup(enableShortcut, disableShortcut) {
-	_enableShortcut = enableShortcut;
-	_disableShortcut = disableShortcut;
-}
-
-function _enableWindowAndApp(win) {
-	debug(`_enableWindowAndApp ${win.getTitle && win.getTitle()}`);
-	if (windowsWithShortcuts.has(ANY_WINDOW)) {
-		enableAll(ANY_WINDOW);
-	}
-
-	if (!windowsWithShortcuts.has(win)) {
-		return;
-	}
-
-	enableAll(win);
-}
-
-function _disableWindowAndApp(win) {
-	debug(`_disableWindowAndApp ${win.getTitle && win.getTitle()}`);
-	if (windowsWithShortcuts.has(ANY_WINDOW)) {
-		disableAll(ANY_WINDOW);
-	}
-
-	if (!windowsWithShortcuts.has(win)) {
-		return;
-	}
-
-	disableAll(win);
-}
-
-function _indexOfShortcut(win, accelerator) {
-	if (!windowsWithShortcuts.has(win)) {
-		return -1;
-	}
-	_checkAccelerator(accelerator);
-
-	const shortcuts = windowsWithShortcuts.get(win);
-	let shortcutToUnregisterIdx = -1;
-	shortcuts.some((s, idx) => {
-		if (s.accelerator === accelerator) {
-			shortcutToUnregisterIdx = idx;
-			return true;
-		}
-		return false;
-	});
-	return shortcutToUnregisterIdx;
-}
+const shortcuts = new WeakMap();
 
 function _checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
@@ -91,10 +34,7 @@ Registered shortcuts no more works on the `window` instance, but the module keep
  * @return {Undefined}
  */
 function disableAll(win) {
-	const shortcuts = windowsWithShortcuts.get(win);
-	if (shortcuts) {
-		shortcuts.forEach(_disableShortcut);
-	}
+
 }
 
 /**
@@ -103,10 +43,7 @@ function disableAll(win) {
  * @return {Undefined}
  */
 function enableAll(win) {
-	const shortcuts = windowsWithShortcuts.get(win);
-	if (shortcuts) {
-		shortcuts.forEach(_enableShortcut);
-	}
+
 }
 
 /**
@@ -115,18 +52,7 @@ function enableAll(win) {
  * @return {Undefined}
  */
 function unregisterAll(win) {
-	if (win === undefined) {
-		// Unregister shortcuts for any window in the app
-		unregisterAll(ANY_WINDOW);
-		return;
-	}
 
-	if (!windowsWithShortcuts.has(win)) {
-		return;
-	}
-
-	disableAll(win);
-	windowsWithShortcuts.delete(win);
 }
 
 /**
@@ -137,56 +63,51 @@ function unregisterAll(win) {
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
-	if (arguments.length === 2 && typeof win === 'string') {
-		// Register shortcut for any window in the app
-		// win = accelerator, accelerator = callback
-		register(ANY_WINDOW, win, accelerator);
-		return;
-	}
-
+	debug(`Register callback for ${accelerator} on window ${win.getTitle()}`);
 	_checkAccelerator(accelerator);
 
-	const newShortcut = {accelerator, callback, registered: false};
+	const wc = win.webContents;
 
-	const _unregister = because => () => {
-		debug(`Disabling shortcuts for app and for window '${(win.getTitle && win.getTitle()) || 'No name'}' because ${because}.`);
-		_disableWindowAndApp(win);
-	};
-
-	const _register = because => () => {
-		debug(`Enabling shortcuts for app and for window '${(win.getTitle && win.getTitle()) || 'No name'}' because ${because}.`);
-		_enableWindowAndApp(win);
-	};
-
-	if (windowsWithShortcuts.has(win)) {
-		const shortcuts = windowsWithShortcuts.get(win);
-		shortcuts.push(newShortcut);
+	let shortcutsCatalog;
+	if (shortcuts.has(wc)) {
+		debug(`Window has others shortcuts registered.`);
+		shortcutsCatalog = shortcuts.get(wc);
 	} else {
-		windowsWithShortcuts.set(win, [newShortcut]);
+		debug(`This is the first shortcut of the window.`);
+		shortcutsCatalog = [];
+		shortcuts.set(wc, shortcutsCatalog);
 
-		if (win !== ANY_WINDOW) {
-			win.on('close', _unregister('the window was closed.'));
+		wc.on('before-input-event', (e, input) => {
+			const electronizedEvent = {
+				code: input.code,
+				key: input.key
+			};
 
-			win.on('hide', _unregister('the window was hidden.'));
+			['alt', 'shift', 'meta'].forEach(prop => {
+				if (typeof input[prop] !== 'undefined') {
+					electronizedEvent[`${prop}Key`] = input[prop];
+				}
+			});
 
-			win.on('minimize', _unregister('the window was minimized.'));
+			if (typeof input.control !== 'undefined') {
+				electronizedEvent.ctrlKey = input.control;
+			}
 
-			win.on('restore', _register('the window was restored from minimized state.'));
-
-			win.on('show', _register('the window was showed.'));
-		}
+			debug(insp`before-input-event: ${input} is translated to: ${electronizedEvent}`);
+			for (const {eventStamp, callback} of shortcutsCatalog) {
+				if (equals(eventStamp, electronizedEvent)) {
+					debug(insp`eventStamp: ${eventStamp} match`);
+					callback();
+					return;
+				}
+				debug(insp`eventStamp: ${eventStamp} no match`);
+			}
+		});
 	}
 
-	const focusedWin = BrowserWindow.getFocusedWindow();
-	const registeringAppShortcut = win === ANY_WINDOW;
-	const appHasFocus = focusedWin !== null && focusedWin.isVisible();
-	const registeringWindowHasFocus = focusedWin === win;
-	const registeringWindowIsMinimized = () => focusedWin.isMinimized();
+	const eventStamp = toKeyEvent(accelerator);
 
-	if ((registeringAppShortcut && appHasFocus) ||
-		(registeringWindowHasFocus && !registeringWindowIsMinimized())) {
-		_register('the window was focused at shortcut registration.');
-	}
+	shortcutsCatalog.push({eventStamp, callback});
 }
 
 /**
@@ -196,22 +117,7 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
-	if (arguments.length === 1 && typeof win === 'string') {
-		// Unregister shortcut for any window in the app
-		// win === accelerator
-		unregister(ANY_WINDOW, win);
-		return;
-	}
-
 	_checkAccelerator(accelerator);
-
-	const shortcutToUnregisterIdx = _indexOfShortcut(win, accelerator);
-
-	if (shortcutToUnregisterIdx !== -1) {
-		_disableShortcut(accelerator);
-		const shortcuts = windowsWithShortcuts.get(win);
-		shortcuts.splice(shortcutToUnregisterIdx, 1);
-	}
 }
 
 /**
@@ -222,40 +128,15 @@ registered on `window`.
  * @return {Boolean} - if the shortcut `accelerator` is registered on `window`.
  */
 function isRegistered(win, accelerator) {
-	if (arguments.length === 1 && typeof win === 'string') {
-		// Check shortcut for any window in the app
-		// win = accelerator
-		return isRegistered(ANY_WINDOW, win);
-	}
-
 	_checkAccelerator(accelerator);
-
-	return _indexOfShortcut(win, accelerator) !== -1;
 }
-
-const windowBlur = because => (_, win) => {
-	debug(`Disabling shortcuts for app and for window '${(win.getTitle && win.getTitle()) || 'No name'}' because ${because}.`);
-	_disableWindowAndApp(win);
-};
-
-const windowFocus = because => (_, win) => {
-	debug(`Enabling shortcuts for app and for window '${(win.getTitle && win.getTitle()) || 'No name'}' because ${because}.`);
-	_enableWindowAndApp(win);
-};
-
-app.on('browser-window-focus', windowFocus('the window gained focus'));
-app.on('browser-window-blur', windowBlur('the window loose focus'));
-
-// All shortcuts should be unregistered by closing the window.
-// just for double check
-app.on('window-all-closed', unregisterAll);
 
 module.exports = {
 	register,
 	unregister,
 	isRegistered,
+
 	unregisterAll,
 	enableAll,
-	disableAll,
-	__mockup
+	disableAll
 };
