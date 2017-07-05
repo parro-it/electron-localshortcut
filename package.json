@@ -10,6 +10,7 @@
     "start": "electron example.js",
     "test-local": "electron test.js | faucet && xo",
     "test": "xo",
+    "rebuild": "npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51",
     "tape": "DEBUG=electron-localshortcut electron test.js"
   },
   "keywords": [
@@ -28,14 +29,15 @@
     "p-electron": "^0.7.0",
     "p-event": "^1.1.0",
     "p-timeout": "^1.0.0",
+    "robotjs": "^0.4.7",
     "tape-async": "^2.3.0",
     "xo": "^0.19.0"
   },
   "dependencies": {
     "debug": "^2.6.8",
     "electron-is-accelerator": "^0.1.0",
-    "insp": "0.0.1",
-    "keyboardevent-from-electron-accelerator": "^0.4.0",
-    "keyboardevents-areequal": "^0.1.0"
+    "insp": "^0.1.0",
+    "keyboardevent-from-electron-accelerator": "^0.5.0",
+    "keyboardevents-areequal": "^0.2.0"
   }
 }
