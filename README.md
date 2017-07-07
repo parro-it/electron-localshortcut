@@ -7,7 +7,7 @@ This is built to circumvent [this Electron issue](https://github.com/atom/electr
 
 **Note:** Since this module internally use `global-shortcut` native module, you should not use it until the `ready` event of the app module is emitted. See [electron docs](http://electron.atom.io/docs/latest/api/global-shortcut/).
 
-[![Travis Build Status](https://img.shields.io/travis/parro-it/electron-localshortcut.svg)](http://travis-ci.org/parro-it/electron-localshortcut)
+[![Travis Build Status](https://img.shields.io/travis/parro-it/electron-localshortcut/master.svg)](http://travis-ci.org/parro-it/electron-localshortcut)
 [![NPM module](https://img.shields.io/npm/v/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 [![NPM downloads](https://img.shields.io/npm/dt/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 [![Greenkeeper badge](https://badges.greenkeeper.io/parro-it/electron-localshortcut.svg)](https://greenkeeper.io/)
