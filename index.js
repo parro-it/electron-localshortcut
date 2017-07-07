@@ -5,6 +5,7 @@ const _debug = require('debug');
 
 const debug = _debug('electron-localshortcut');
 const windowsWithShortcuts = new WeakMap();
+const windowsEventCallbacks = new WeakMap();
 
 // A placeholder to register shortcuts
 // on any window of the app.
@@ -127,6 +128,13 @@ function unregisterAll(win) {
 
 	disableAll(win);
 	windowsWithShortcuts.delete(win);
+	
+	/* unregister all event callbacks */
+	const eventCallbacks = windowsEventCallbacks.get(win);
+	for(let key in eventCallbacks) {
+		win.removeListener(key, eventCallbacks[key]);
+	}
+	windowsEventCallbacks.delete(win);
 }
 
 /**
@@ -165,15 +173,19 @@ function register(win, accelerator, callback) {
 		windowsWithShortcuts.set(win, [newShortcut]);
 
 		if (win !== ANY_WINDOW) {
-			win.on('close', _unregister('the window was closed.'));
-
-			win.on('hide', _unregister('the window was hidden.'));
-
-			win.on('minimize', _unregister('the window was minimized.'));
-
-			win.on('restore', _register('the window was restored from minimized state.'));
-
-			win.on('show', _register('the window was showed.'));
+			const eventCallbacks = {
+				'close': _unregister('the window was closed.'),
+				'hide': _unregister('the window was hidden.'),
+				'minimize': _unregister('the window was minimized.'),
+				'restore': _register('the window was restored from minimized state.'),
+				'show': _register('the window was showed.')
+			};
+			
+			for(let key in eventCallbacks) {
+				win.on(key, eventCallbacks[key]);
+			}
+			
+			windowsEventCallbacks.set(win, eventCallbacks);
 		}
 	}
 
