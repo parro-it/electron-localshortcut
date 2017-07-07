@@ -8,9 +8,8 @@
   "scripts": {
     "doc": "documentation readme index.js --section=API",
     "start": "electron example.js",
-    "test-local": "electron test.js | faucet && xo",
-    "test": "xo",
-    "rebuild": "npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51",
+    "test": "electron test.js | faucet && xo",
+    "setup-dev": "npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51",
     "tape": "DEBUG=electron-localshortcut electron test.js"
   },
   "keywords": [

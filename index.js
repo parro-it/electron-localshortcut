@@ -1,5 +1,5 @@
 'use strict';
-const {BrowserWindow, app} = require('electron');
+// Aconst {BrowserWindow, app} = require('electron');
 const isAccelerator = require('electron-is-accelerator');
 const equals = require('keyboardevents-areequal');
 const {toKeyEvent} = require('keyboardevent-from-electron-accelerator');
@@ -10,9 +10,9 @@ const debug = _debug('electron-localshortcut');
 
 // A placeholder to register shortcuts
 // on any window of the app.
-const ANY_WINDOW = {};
+// const ANY_WINDOW = {};
 
-const shortcuts = new WeakMap();
+const windowsWithShortcuts = new WeakMap();
 
 function _checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
@@ -34,7 +34,13 @@ Registered shortcuts no more works on the `window` instance, but the module keep
  * @return {Undefined}
  */
 function disableAll(win) {
+	debug(`Disabling all shortcuts on window ${win.getTitle()}`);
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
+	for (const shortcut of shortcutsOfWindow) {
+		shortcut.enabled = false;
+	}
 }
 
 /**
@@ -43,7 +49,13 @@ function disableAll(win) {
  * @return {Undefined}
  */
 function enableAll(win) {
+	debug(`Enabling all shortcuts on window ${win.getTitle()}`);
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
+	for (const shortcut of shortcutsOfWindow) {
+		shortcut.enabled = true;
+	}
 }
 
 /**
@@ -52,8 +64,63 @@ function enableAll(win) {
  * @return {Undefined}
  */
 function unregisterAll(win) {
+	debug(`Unregistering all shortcuts on window ${win.getTitle()}`);
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
+	// Remove listener from window
+	shortcutsOfWindow.removeListener();
+
+	windowsWithShortcuts.delete(wc);
 }
+
+function _normalizeEvent(input) {
+	const normalizedEvent = {
+		code: input.code,
+		key: input.key
+	};
+
+	['alt', 'shift', 'meta'].forEach(prop => {
+		if (typeof input[prop] !== 'undefined') {
+			normalizedEvent[`${prop}Key`] = input[prop];
+		}
+	});
+
+	if (typeof input.control !== 'undefined') {
+		normalizedEvent.ctrlKey = input.control;
+	}
+
+	return normalizedEvent;
+}
+
+function _findShortcut(event, shortcutsOfWindow) {
+	let i = 0;
+	for (const shortcut of shortcutsOfWindow) {
+		if (equals(shortcut.eventStamp, event)) {
+			return i;
+		}
+		i++;
+	}
+	return -1;
+}
+
+const _onBeforeInput = shortcutsOfWindow => (e, input) => {
+	if (input.type === 'keyUp') {
+		return;
+	}
+
+	const event = _normalizeEvent(input);
+
+	debug(insp`before-input-event: ${input} is translated to: ${event}`);
+	for (const {eventStamp, callback} of shortcutsOfWindow) {
+		if (equals(eventStamp, event)) {
+			debug(insp`eventStamp: ${eventStamp} match`);
+			callback();
+			return;
+		}
+		debug(insp`eventStamp: ${eventStamp} no match`);
+	}
+};
 
 /**
 * Registers the shortcut `accelerator`on the BrowserWindow instance.
@@ -63,51 +130,41 @@ function unregisterAll(win) {
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
-	debug(`Register callback for ${accelerator} on window ${win.getTitle()}`);
+	debug(`Registering callback for ${accelerator} on window ${win.getTitle()}`);
 	_checkAccelerator(accelerator);
+
+	debug(`${accelerator} seems a valid shortcut sequence.`);
 
 	const wc = win.webContents;
 
-	let shortcutsCatalog;
-	if (shortcuts.has(wc)) {
+	let shortcutsOfWindow;
+	if (windowsWithShortcuts.has(wc)) {
 		debug(`Window has others shortcuts registered.`);
-		shortcutsCatalog = shortcuts.get(wc);
+		shortcutsOfWindow = windowsWithShortcuts.get(wc);
 	} else {
 		debug(`This is the first shortcut of the window.`);
-		shortcutsCatalog = [];
-		shortcuts.set(wc, shortcutsCatalog);
+		shortcutsOfWindow = [];
+		windowsWithShortcuts.set(wc, shortcutsOfWindow);
 
-		wc.on('before-input-event', (e, input) => {
-			const electronizedEvent = {
-				code: input.code,
-				key: input.key
-			};
+		const keyHandler = _onBeforeInput(shortcutsOfWindow);
+		wc.on('before-input-event', keyHandler);
 
-			['alt', 'shift', 'meta'].forEach(prop => {
-				if (typeof input[prop] !== 'undefined') {
-					electronizedEvent[`${prop}Key`] = input[prop];
-				}
-			});
-
-			if (typeof input.control !== 'undefined') {
-				electronizedEvent.ctrlKey = input.control;
-			}
-
-			debug(insp`before-input-event: ${input} is translated to: ${electronizedEvent}`);
-			for (const {eventStamp, callback} of shortcutsCatalog) {
-				if (equals(eventStamp, electronizedEvent)) {
-					debug(insp`eventStamp: ${eventStamp} match`);
-					callback();
-					return;
-				}
-				debug(insp`eventStamp: ${eventStamp} no match`);
-			}
-		});
+		// Save a reference to allow remove of listener from elsewhere
+		shortcutsOfWindow.removeListener = () => wc.removeListener('before-input-event', keyHandler);
+		wc.once('closed', shortcutsOfWindow.removeListener);
 	}
+
+	debug(`Adding shortcut to window set.`);
 
 	const eventStamp = toKeyEvent(accelerator);
 
-	shortcutsCatalog.push({eventStamp, callback});
+	shortcutsOfWindow.push({
+		eventStamp,
+		callback,
+		enabled: true
+	});
+
+	debug(`Shortcut registered.`);
 }
 
 /**
@@ -117,7 +174,32 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
+	debug(`Unregistering callback for ${accelerator} on window ${win.getTitle()}`);
 	_checkAccelerator(accelerator);
+
+	debug(`${accelerator} seems a valid shortcut sequence.`);
+
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
+
+	const eventStamp = toKeyEvent(accelerator);
+	const shortcutIdx = _findShortcut(eventStamp, shortcutsOfWindow);
+	if (shortcutIdx === -1) {
+		return;
+	}
+
+	shortcutsOfWindow.splice(shortcutIdx, 1);
+
+	// If the window has no more shortcuts,
+	// we remove it early from the WeakMap
+	// and unregistering the event listener
+	if (shortcutsOfWindow.length === 0) {
+		// Remove listener from window
+		shortcutsOfWindow.removeListener();
+
+		// Remove window from shrtcuts catalog
+		windowsWithShortcuts.delete(wc);
+	}
 }
 
 /**
@@ -135,7 +217,6 @@ module.exports = {
 	register,
 	unregister,
 	isRegistered,
-
 	unregisterAll,
 	enableAll,
 	disableAll
