@@ -128,10 +128,10 @@ function unregisterAll(win) {
 
 	disableAll(win);
 	windowsWithShortcuts.delete(win);
-	
-	/* unregister all event callbacks */
+
+	/* Unregister all event callbacks */
 	const eventCallbacks = windowsEventCallbacks.get(win);
-	for(let key in eventCallbacks) {
+	for (const key of Object.keys(eventCallbacks)) {
 		win.removeListener(key, eventCallbacks[key]);
 	}
 	windowsEventCallbacks.delete(win);
@@ -174,17 +174,17 @@ function register(win, accelerator, callback) {
 
 		if (win !== ANY_WINDOW) {
 			const eventCallbacks = {
-				'close': _unregister('the window was closed.'),
-				'hide': _unregister('the window was hidden.'),
-				'minimize': _unregister('the window was minimized.'),
-				'restore': _register('the window was restored from minimized state.'),
-				'show': _register('the window was showed.')
+				close: _unregister('the window was closed.'),
+				hide: _unregister('the window was hidden.'),
+				minimize: _unregister('the window was minimized.'),
+				restore: _register('the window was restored from minimized state.'),
+				show: _register('the window was showed.')
 			};
-			
-			for(let key in eventCallbacks) {
+
+			for (const key of Object.keys(eventCallbacks)) {
 				win.on(key, eventCallbacks[key]);
 			}
-			
+
 			windowsEventCallbacks.set(win, eventCallbacks);
 		}
 	}
