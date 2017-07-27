@@ -17,7 +17,7 @@ const windowsWithShortcuts = new WeakMap();
 const title = win => {
 	if (win) {
 		try {
-			return title(win);
+			return win.getTitle();
 		} catch (err) {
 			return 'A destroyed window';
 		}
@@ -41,7 +41,9 @@ ${w.stack.split('\n').slice(4).join('\n')}
 
 /**
  * Disable all of the shortcuts registered on the BrowserWindow instance.
-Registered shortcuts no more works on the `window` instance, but the module keep a reference on them. You can reactivate them later by calling `enableAll` method on the same window instance.
+ * Registered shortcuts no more works on the `window` instance, but the module
+ * keep a reference on them. You can reactivate them later by calling `enableAll`
+ * method on the same window instance.
  * @param  {BrowserWindow} win BrowserWindow instance
  * @return {Undefined}
  */
@@ -56,7 +58,8 @@ function disableAll(win) {
 }
 
 /**
- * Enable all of the shortcuts registered on the BrowserWindow instance that you had previously disabled calling `disableAll` method.
+ * Enable all of the shortcuts registered on the BrowserWindow instance that
+ * you had previously disabled calling `disableAll` method.
  * @param  {BrowserWindow} win BrowserWindow instance
  * @return {Undefined}
  */
@@ -71,7 +74,9 @@ function enableAll(win) {
 }
 
 /**
- * Unregisters all of the shortcuts registered on any focused BrowserWindow instance. This method does not unregister any shortcut you registered on a particular window instance.
+ * Unregisters all of the shortcuts registered on any focused BrowserWindow
+ * instance. This method does not unregister any shortcut you registered on
+ * a particular window instance.
  * @param  {BrowserWindow} win BrowserWindow instance
  * @return {Undefined}
  */
@@ -136,9 +141,12 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 
 /**
 * Registers the shortcut `accelerator`on the BrowserWindow instance.
- * @param  {BrowserWindow} win - BrowserWindow instance to register. This argument could be omitted, in this case the function register the shortcut on all app windows.
+ * @param  {BrowserWindow} win - BrowserWindow instance to register.
+ * This argument could be omitted, in this case the function register
+ * the shortcut on all app windows.
  * @param  {String} accelerator - the shortcut to register
- * @param  {Function} callback    This function is called when the shortcut is pressed and the window is focused and not minimized.
+ * @param  {Function} callback    This function is called when the shortcut is pressed
+ * and the window is focused and not minimized.
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
@@ -181,7 +189,9 @@ function register(win, accelerator, callback) {
 
 /**
  * Unregisters the shortcut of `accelerator` registered on the BrowserWindow instance.
- * @param  {BrowserWindow} win - BrowserWindow instance to unregister. This argument could be omitted, in this case the function unregister the shortcut on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
+ * @param  {BrowserWindow} win - BrowserWindow instance to unregister.
+ * This argument could be omitted, in this case the function unregister the shortcut
+ * on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
  * @param  {String} accelerator - the shortcut to unregister
  * @return {Undefined}
  */
@@ -215,9 +225,12 @@ function unregister(win, accelerator) {
 }
 
 /**
- * Returns `true` or `false` depending on whether the shortcut `accelerator` is
-registered on `window`.
- * @param  {BrowserWindow} win - BrowserWindow instance to check. This argument could be omitted, in this case the function returns whether the shortcut `accelerator` is registered on all app windows. If you registered the shortcut on a particular window instance, it return false.
+ * Returns `true` or `false` depending on whether the shortcut `accelerator`
+ * is registered on `window`.
+ * @param  {BrowserWindow} win - BrowserWindow instance to check. This argument
+ * could be omitted, in this case the function returns whether the shortcut
+ * `accelerator` is registered on all app windows. If you registered the
+ * shortcut on a particular window instance, it return false.
  * @param  {String} accelerator - the shortcut to check
  * @return {Boolean} - if the shortcut `accelerator` is registered on `window`.
  */
