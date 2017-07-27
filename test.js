@@ -39,6 +39,17 @@ test('exports an shortcuts object', async t => {
 
 test('appReady return a promise that resolve when electron app is ready', beforeAll);
 
+test('shortcut is called on keydown only', async t => {
+	let called = 0;
+	shortcuts.register(winHolder, 'Alt+R', () => {
+		called++;
+	});
+
+	robot.keyTap('r', ['alt']);
+	await delay(400);
+	t.is(called, 1);
+});
+
 test('shortcut is called', async t => {
 	const shortcutPressed = promiseForShortcutPressed('Alt+A');
 	robot.keyTap('a', ['alt']);
@@ -66,17 +77,6 @@ test('shortcut is not called after unregistration', async t => {
 	robot.keyTap('a', ['control']);
 	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
-});
-
-test('shortcut is called on keydown only', async t => {
-	let called = 0;
-	shortcuts.register(winHolder, 'Ctrl+A', () => {
-		called++;
-	});
-
-	robot.keyTap('a', ['control']);
-	await delay(400);
-	t.is(called, 1);
 });
 
 test('app quit', t => {

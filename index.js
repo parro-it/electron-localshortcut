@@ -14,6 +14,18 @@ const debug = _debug('electron-localshortcut');
 
 const windowsWithShortcuts = new WeakMap();
 
+const title = win => {
+	if (win) {
+		try {
+			return title(win);
+		} catch (err) {
+			return 'A destroyed window';
+		}
+	}
+
+	return 'An falsy value';
+};
+
 function _checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
 		const w = {};
@@ -34,7 +46,7 @@ Registered shortcuts no more works on the `window` instance, but the module keep
  * @return {Undefined}
  */
 function disableAll(win) {
-	debug(`Disabling all shortcuts on window ${win.getTitle()}`);
+	debug(`Disabling all shortcuts on window ${title(win)}`);
 	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
@@ -49,7 +61,7 @@ function disableAll(win) {
  * @return {Undefined}
  */
 function enableAll(win) {
-	debug(`Enabling all shortcuts on window ${win.getTitle()}`);
+	debug(`Enabling all shortcuts on window ${title(win)}`);
 	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
@@ -64,7 +76,7 @@ function enableAll(win) {
  * @return {Undefined}
  */
 function unregisterAll(win) {
-	debug(`Unregistering all shortcuts on window ${win.getTitle()}`);
+	debug(`Unregistering all shortcuts on window ${title(win)}`);
 	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
@@ -130,7 +142,7 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
-	debug(`Registering callback for ${accelerator} on window ${win.getTitle()}`);
+	debug(`Registering callback for ${accelerator} on window ${title(win)}`);
 	_checkAccelerator(accelerator);
 
 	debug(`${accelerator} seems a valid shortcut sequence.`);
@@ -174,7 +186,7 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
-	debug(`Unregistering callback for ${accelerator} on window ${win.getTitle()}`);
+	debug(`Unregistering callback for ${accelerator} on window ${title(win)}`);
 	_checkAccelerator(accelerator);
 
 	debug(`${accelerator} seems a valid shortcut sequence.`);
