@@ -1,5 +1,5 @@
 'use strict';
-// Aconst {BrowserWindow, app} = require('electron');
+const {app, BrowserWindow} = require('electron');
 const isAccelerator = require('electron-is-accelerator');
 const equals = require('keyboardevents-areequal');
 const {toKeyEvent} = require('keyboardevent-from-electron-accelerator');
@@ -10,7 +10,7 @@ const debug = _debug('electron-localshortcut');
 
 // A placeholder to register shortcuts
 // on any window of the app.
-// const ANY_WINDOW = {};
+const ANY_WINDOW = {};
 
 const windowsWithShortcuts = new WeakMap();
 
@@ -150,12 +150,19 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
+	let wc;
+	if (typeof callback === 'undefined') {
+		wc = ANY_WINDOW;
+		callback = accelerator;
+		accelerator = win;
+	} else {
+		wc = win.webContents;
+	}
+
 	debug(`Registering callback for ${accelerator} on window ${title(win)}`);
 	_checkAccelerator(accelerator);
 
 	debug(`${accelerator} seems a valid shortcut sequence.`);
-
-	const wc = win.webContents;
 
 	let shortcutsOfWindow;
 	if (windowsWithShortcuts.has(wc)) {
@@ -166,12 +173,49 @@ function register(win, accelerator, callback) {
 		shortcutsOfWindow = [];
 		windowsWithShortcuts.set(wc, shortcutsOfWindow);
 
-		const keyHandler = _onBeforeInput(shortcutsOfWindow);
-		wc.on('before-input-event', keyHandler);
+		if (wc === ANY_WINDOW) {
+			const keyHandler = _onBeforeInput(shortcutsOfWindow);
+			const enableAppShortcuts = (e, win) => {
+				const wc = win.webContents;
+				wc.on('before-input-event', keyHandler);
+				wc.once(
+					'closed',
+					() => wc.removeListener('before-input-event', keyHandler)
+				);
+			};
 
-		// Save a reference to allow remove of listener from elsewhere
-		shortcutsOfWindow.removeListener = () => wc.removeListener('before-input-event', keyHandler);
-		wc.once('closed', shortcutsOfWindow.removeListener);
+			// Enable shortcut on current windows
+			const windows = BrowserWindow.getAllWindows();
+
+			windows.forEach(win => enableAppShortcuts(null, win));
+
+			// Enable shortcut on future windows
+			app.on(
+				'browser-window-created',
+				enableAppShortcuts
+			);
+
+			shortcutsOfWindow.removeListener = () => {
+				const windows = BrowserWindow.getAllWindows();
+				windows.forEach(win =>
+					win.webContents.removeListener(
+						'before-input-event',
+						keyHandler
+					)
+				);
+				app.removeListener(
+					'browser-window-created',
+					enableAppShortcuts
+				);
+			};
+		} else {
+			const keyHandler = _onBeforeInput(shortcutsOfWindow);
+			wc.on('before-input-event', keyHandler);
+
+			// Save a reference to allow remove of listener from elsewhere
+			shortcutsOfWindow.removeListener = () => wc.removeListener('before-input-event', keyHandler);
+			wc.once('closed', shortcutsOfWindow.removeListener);
+		}
 	}
 
 	debug(`Adding shortcut to window set.`);
@@ -196,12 +240,20 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
+	debugger
+	let wc;
+	if (typeof accelerator === 'undefined') {
+		wc = ANY_WINDOW;
+		accelerator = win;
+	} else {
+		wc = win.webContents;
+	}
+
 	debug(`Unregistering callback for ${accelerator} on window ${title(win)}`);
 	_checkAccelerator(accelerator);
 
 	debug(`${accelerator} seems a valid shortcut sequence.`);
 
-	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
 	const eventStamp = toKeyEvent(accelerator);
