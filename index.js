@@ -240,7 +240,6 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
-	debugger
 	let wc;
 	if (typeof accelerator === 'undefined') {
 		wc = ANY_WINDOW;
