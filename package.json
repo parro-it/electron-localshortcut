@@ -37,6 +37,6 @@
     "electron-is-accelerator": "^0.1.0",
     "insp": "^0.1.0",
     "keyboardevent-from-electron-accelerator": "^0.6.0",
-    "keyboardevents-areequal": "^0.2.0"
+    "keyboardevents-areequal": "^0.2.1"
   }
 }
