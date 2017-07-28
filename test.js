@@ -11,28 +11,6 @@ const shortcuts = require('.');
 
 let winHolder;
 
-const promiseForShortcutPressedOnWindow = (win, key) => new Promise(resolve =>
-	shortcuts.register(win, key, resolve));
-
-const promiseForShortcutPressed = key => new Promise(resolve =>
-	shortcuts.register(winHolder, key, resolve));
-
-async function beforeAll() {
-	await appReady();
-	// We could create a window, because the app is ready
-	winHolder = new BrowserWindow();
-	winHolder.loadURL(`file://${__dirname}/example.html`);
-	await windowVisible(winHolder);
-}
-
-async function shortcutWasPressed(shortcutPressed) {
-	return undefined === await pTimeout(shortcutPressed, 400);
-}
-
-function shortcutWasNotPressed(shortcutPressed) {
-	return pTimeout(shortcutPressed, 400);
-}
-
 test('exports an shortcuts object', async t => {
 	t.is(typeof shortcuts, 'object');
 });
@@ -70,12 +48,13 @@ test('shortcut is not called on closed windows', async t => {
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
-test('shortcut is not called after unregistration', async t => {
+test('shortcut is not called after unregister', async t => {
 	const shortcutPressed = promiseForShortcutPressed('Ctrl+A');
 	shortcuts.unregister(winHolder, 'Ctrl+A');
 
 	robot.keyTap('a', ['control']);
 	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
+
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
@@ -87,3 +66,44 @@ test('app quit', t => {
 		w.close();
 	}
 });
+
+function promiseForShortcutPressedOnWindow(win, key) {
+	const destroy = () => shortcuts.unregister(win, key);
+
+	const result = new Promise(resolve =>
+		shortcuts.register(win, key, resolve)
+	).then(destroy);
+
+	result.destroy = destroy;
+	return result;
+}
+
+function promiseForShortcutPressed(key) {
+	const destroy = () => shortcuts.unregister(winHolder, key);
+
+	const result = new Promise(resolve =>
+		shortcuts.register(winHolder, key, resolve)
+	).then(destroy);
+
+	result.destroy = destroy;
+	return result;
+}
+
+async function beforeAll() {
+	await appReady();
+	// We could create a window, because the app is ready
+	winHolder = new BrowserWindow();
+	winHolder.loadURL(`file://${__dirname}/example.html`);
+	await windowVisible(winHolder);
+}
+
+async function shortcutWasPressed(shortcutPressed) {
+	return undefined === await pTimeout(shortcutPressed, 400);
+}
+
+function shortcutWasNotPressed(shortcutPressed) {
+	return pTimeout(shortcutPressed, 400).catch(err => {
+		shortcutPressed.destroy();
+		throw err;
+	});
+}
