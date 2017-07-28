@@ -245,10 +245,6 @@ function unregister(win, accelerator) {
 		wc = ANY_WINDOW;
 		accelerator = win;
 	} else {
-		// Argument win is a BrowserWindow instance.
-		// if it is destroyed, we already unregistered
-		// all shortcuts on closed event, so we early
-		// return.
 		if (win.isDestroyed()) {
 			debug(`Early return because window is destroyed.`);
 			return;
@@ -257,9 +253,15 @@ function unregister(win, accelerator) {
 	}
 
 	debug(`Unregistering callback for ${accelerator} on window ${title(win)}`);
+
 	_checkAccelerator(accelerator);
 
 	debug(`${accelerator} seems a valid shortcut sequence.`);
+
+	if (!windowsWithShortcuts.has(wc)) {
+		debug(`Early return because window has never had shortcuts registered.`);
+		return;
+	}
 
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
