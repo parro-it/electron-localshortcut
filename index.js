@@ -245,6 +245,14 @@ function unregister(win, accelerator) {
 		wc = ANY_WINDOW;
 		accelerator = win;
 	} else {
+		// Argument win is a BrowserWindow instance.
+		// if it is destroyed, we already unregistered
+		// all shortcuts on closed event, so we early
+		// return.
+		if (win.isDestroyed()) {
+			debug(`Early return because window is destroyed.`);
+			return;
+		}
 		wc = win.webContents;
 	}
 
