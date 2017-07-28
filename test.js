@@ -22,15 +22,15 @@ test('shortcut is called on keydown only', async t => {
 	shortcuts.register(winHolder, 'Alt+R', () => {
 		called++;
 	});
-
 	robot.keyTap('r', ['alt']);
 	await delay(400);
+	shortcuts.unregister(winHolder, 'Alt+R');
 	t.is(called, 1);
 });
 
 test('shortcut is called', async t => {
-	const shortcutPressed = promiseForShortcutPressed('Alt+A');
-	robot.keyTap('a', ['alt']);
+	const shortcutPressed = promiseForShortcutPressed('Alt+U');
+	robot.keyTap('u', ['alt']);
 	t.true(await shortcutWasPressed(shortcutPressed));
 });
 
@@ -48,13 +48,53 @@ test('shortcut is not called on closed windows', async t => {
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
+test.skip('app shortcut are called on every windows', async t => {
+	winHolder.hide();
+
+	const win = new BrowserWindow();
+	const win2 = new BrowserWindow();
+
+	win.loadURL(`file://${__dirname}/example.html`);
+	win.focus();
+	await windowVisible(win);
+
+	let called = 0;
+	shortcuts.register('Alt+R', () => {
+		if (called === 0) {
+			win.close();
+		}
+
+		if (called === 1) {
+			win2.close();
+		}
+
+		called++;
+	});
+
+	robot.keyTap('r', ['alt']);
+
+	await windowClosed(win);
+
+	win2.loadURL(`file://${__dirname}/example.html`);
+	await windowVisible(win2);
+	win2.focus();
+
+	robot.keyTap('r', ['alt']);
+
+	win2.close();
+	await windowClosed(win2);
+
+	winHolder.show();
+	t.is(called, 2);
+});
+
 test('shortcut is not called after unregister', async t => {
 	const shortcutPressed = promiseForShortcutPressed('Ctrl+A');
 	shortcuts.unregister(winHolder, 'Ctrl+A');
 
 	robot.keyTap('a', ['control']);
 	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
-
+	console.log(err);
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
