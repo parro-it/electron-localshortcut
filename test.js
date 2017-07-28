@@ -48,15 +48,14 @@ test('shortcut is not called on closed windows', async t => {
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
-test.skip('app shortcut are called on every windows', async t => {
+test('app shortcut are called on every windows', async t => {
 	winHolder.hide();
 
-	const win = new BrowserWindow();
-	const win2 = new BrowserWindow();
+	const win = new BrowserWindow({show: false});
+	const win2 = new BrowserWindow({show: false});
 
 	win.loadURL(`file://${__dirname}/example.html`);
-	win.focus();
-	await windowVisible(win);
+	win2.loadURL(`file://${__dirname}/example.html`);
 
 	let called = 0;
 	shortcuts.register('Alt+R', () => {
@@ -71,17 +70,18 @@ test.skip('app shortcut are called on every windows', async t => {
 		called++;
 	});
 
+	win.show();
+	await windowVisible(win);
+
 	robot.keyTap('r', ['alt']);
 
 	await windowClosed(win);
 
-	win2.loadURL(`file://${__dirname}/example.html`);
+	win2.show();
 	await windowVisible(win2);
-	win2.focus();
 
 	robot.keyTap('r', ['alt']);
 
-	win2.close();
 	await windowClosed(win2);
 
 	winHolder.show();
