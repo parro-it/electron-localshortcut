@@ -35,7 +35,6 @@
   "dependencies": {
     "debug": "^2.6.8",
     "electron-is-accelerator": "^0.1.0",
-    "insp": "^0.1.0",
     "keyboardevent-from-electron-accelerator": "^0.7.0",
     "keyboardevents-areequal": "^0.2.1"
   }

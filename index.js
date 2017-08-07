@@ -3,7 +3,6 @@ const {app, BrowserWindow} = require('electron');
 const isAccelerator = require('electron-is-accelerator');
 const equals = require('keyboardevents-areequal');
 const {toKeyEvent} = require('keyboardevent-from-electron-accelerator');
-const insp = require('insp');
 const _debug = require('debug');
 
 const debug = _debug('electron-localshortcut');
@@ -128,14 +127,14 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 
 	const event = _normalizeEvent(input);
 
-	debug(insp`before-input-event: ${input} is translated to: ${event}`);
+	debug(`before-input-event: ${input} is translated to: ${event}`);
 	for (const {eventStamp, callback} of shortcutsOfWindow) {
 		if (equals(eventStamp, event)) {
-			debug(insp`eventStamp: ${eventStamp} match`);
+			debug(`eventStamp: ${eventStamp} match`);
 			callback();
 			return;
 		}
-		debug(insp`eventStamp: ${eventStamp} no match`);
+		debug(`eventStamp: ${eventStamp} no match`);
 	}
 };
 
