@@ -1,7 +1,9 @@
 'use strict';
-const {globalShortcut, BrowserWindow, app} = require('electron');
+const electron = require('electron');
 const isAccelerator = require('electron-is-accelerator');
 const _debug = require('debug');
+
+const {globalShortcut, BrowserWindow, app} = electron.remote || electron;
 
 const debug = _debug('electron-localshortcut');
 const windowsWithShortcuts = new WeakMap();
