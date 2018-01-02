@@ -15,7 +15,10 @@ test('exports an shortcuts object', async t => {
 	t.is(typeof shortcuts, 'object');
 });
 
-test('appReady return a promise that resolve when electron app is ready', beforeAll);
+test(
+	'appReady return a promise that resolve when electron app is ready',
+	beforeAll
+);
 
 test('shortcut is called on keydown only', async t => {
 	let called = 0;
@@ -29,8 +32,8 @@ test('shortcut is called on keydown only', async t => {
 });
 
 test('shortcut is called', async t => {
-	const shortcutPressed = promiseForShortcutPressed('Alt+U');
-	robot.keyTap('u', ['alt']);
+	const shortcutPressed = promiseForShortcutPressed('Alt+Ctrl+U');
+	robot.keyTap('u', ['alt', 'control']);
 	t.true(await shortcutWasPressed(shortcutPressed));
 });
 
@@ -138,7 +141,7 @@ async function beforeAll() {
 }
 
 async function shortcutWasPressed(shortcutPressed) {
-	return undefined === await pTimeout(shortcutPressed, 400);
+	return undefined === (await pTimeout(shortcutPressed, 400));
 }
 
 function shortcutWasNotPressed(shortcutPressed) {
