@@ -32,7 +32,10 @@ function _checkAccelerator(accelerator) {
 		const msg = `
 WARNING: ${accelerator} is not a valid accelerator.
 
-${w.stack.split('\n').slice(4).join('\n')}
+${w.stack
+			.split('\n')
+			.slice(4)
+			.join('\n')}
 `;
 		console.error(msg);
 	}
@@ -177,9 +180,8 @@ function register(win, accelerator, callback) {
 			const enableAppShortcuts = (e, win) => {
 				const wc = win.webContents;
 				wc.on('before-input-event', keyHandler);
-				wc.once(
-					'closed',
-					() => wc.removeListener('before-input-event', keyHandler)
+				wc.once('closed', () =>
+					wc.removeListener('before-input-event', keyHandler)
 				);
 			};
 
@@ -189,30 +191,22 @@ function register(win, accelerator, callback) {
 			windows.forEach(win => enableAppShortcuts(null, win));
 
 			// Enable shortcut on future windows
-			app.on(
-				'browser-window-created',
-				enableAppShortcuts
-			);
+			app.on('browser-window-created', enableAppShortcuts);
 
 			shortcutsOfWindow.removeListener = () => {
 				const windows = BrowserWindow.getAllWindows();
 				windows.forEach(win =>
-					win.webContents.removeListener(
-						'before-input-event',
-						keyHandler
-					)
+					win.webContents.removeListener('before-input-event', keyHandler)
 				);
-				app.removeListener(
-					'browser-window-created',
-					enableAppShortcuts
-				);
+				app.removeListener('browser-window-created', enableAppShortcuts);
 			};
 		} else {
 			const keyHandler = _onBeforeInput(shortcutsOfWindow);
 			wc.on('before-input-event', keyHandler);
 
 			// Save a reference to allow remove of listener from elsewhere
-			shortcutsOfWindow.removeListener = () => wc.removeListener('before-input-event', keyHandler);
+			shortcutsOfWindow.removeListener = () =>
+				wc.removeListener('before-input-event', keyHandler);
 			wc.once('closed', shortcutsOfWindow.removeListener);
 		}
 	}
