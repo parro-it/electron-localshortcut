@@ -1,41 +1,41 @@
 {
-  "name": "electron-localshortcut",
-  "version": "3.0.2",
-  "description": "register/unregister a keyboard shortcut locally to a BrowserWindow instance, without using a Menu",
-  "repository": "parro-it/electron-localshortcut",
-  "license": "MIT",
-  "author": "andrea@parro.it",
-  "scripts": {
-    "doc": "documentation readme index.js --section=API",
-    "start": "electron example.js",
-    "test": "electron test.js | faucet && xo",
-    "setup-dev": "npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51",
-    "tape": "DEBUG=electron-localshortcut electron test.js"
-  },
-  "keywords": [
-    "electron",
-    "shortcuts",
-    "browser-window"
-  ],
-  "files": [
-    "index.js"
-  ],
-  "devDependencies": {
-    "delay": "^2.0.0",
-    "documentation": "^4.0.0-rc.1",
-    "electron": "^1.6.7",
-    "faucet": "^0.0.1",
-    "p-electron": "^0.8.0",
-    "p-event": "^1.1.0",
-    "p-timeout": "^1.0.0",
-    "robotjs": "^0.4.7",
-    "tape-async": "^2.3.0",
-    "xo": "^0.19.0"
-  },
-  "dependencies": {
-    "debug": "^2.6.8",
-    "electron-is-accelerator": "^0.1.0",
-    "keyboardevent-from-electron-accelerator": "^0.7.0",
-    "keyboardevents-areequal": "^0.2.1"
-  }
+	"name": "electron-localshortcut",
+	"version": "3.0.2",
+	"description": "register/unregister a keyboard shortcut locally to a BrowserWindow instance, without using a Menu",
+	"repository": "parro-it/electron-localshortcut",
+	"license": "MIT",
+	"author": "andrea@parro.it",
+	"scripts": {
+		"doc": "documentation readme index.js --section=API",
+		"start": "electron example.js",
+		"test": "electron test.js | faucet && xo",
+		"setup-dev": "npm rebuild --runtime=electron --target=1.6.7 --disturl=https://atom.io/download/atom-shell --abi=51",
+		"tape": "DEBUG=electron-localshortcut electron test.js"
+	},
+	"keywords": [
+		"electron",
+		"shortcuts",
+		"browser-window"
+	],
+	"files": [
+		"index.js"
+	],
+	"devDependencies": {
+		"delay": "^2.0.0",
+		"documentation": "^4.0.0-rc.1",
+		"electron": "~1.6.7",
+		"faucet": "^0.0.1",
+		"p-electron": "^0.8.0",
+		"p-event": "^1.1.0",
+		"p-timeout": "^1.0.0",
+		"robotjs": "^0.4.7",
+		"tape-async": "^2.3.0",
+		"xo": "^0.19.0"
+	},
+	"dependencies": {
+		"debug": "^2.6.8",
+		"electron-is-accelerator": "^0.1.0",
+		"keyboardevent-from-electron-accelerator": "^1.1.0",
+		"keyboardevents-areequal": "^0.2.1"
+	}
 }
