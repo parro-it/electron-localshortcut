@@ -1,251 +1,104 @@
 'use strict';
 const {BrowserWindow, app} = require('electron');
 const test = require('tape-async');
+const {appReady, windowVisible, windowClosed} = require('p-electron');
 const pTimeout = require('p-timeout');
-const {appReady, focusWindow, minimizeWindow, restoreWindow, windowVisible} = require('p-electron');
+const delay = require('delay');
+
+const robot = require('robotjs');
 
 const shortcuts = require('.');
 
 let winHolder;
-const mock = createMock();
-
-function createMock() {
-	const shortcutsRegister = {};
-
-	const enableShortcut = shortcut => {
-		shortcutsRegister[shortcut.accelerator] = shortcut.callback;
-	};
-
-	const disableShortcut = shortcut => {
-		delete shortcutsRegister[shortcut.accelerator];
-	};
-
-	const keypress = keys => {
-		const shortcut = shortcutsRegister[keys];
-		if (shortcut) {
-			shortcut();
-		}
-	};
-
-	shortcuts.__mockup(enableShortcut, disableShortcut);
-
-	return {keypress};
-}
-
-async function beforeAll() {
-	await appReady();
-	// We could create a window, because the app is ready
-	winHolder = new BrowserWindow({show: false});
-	winHolder.loadURL('https://example.com');
-	winHolder.show();
-}
-
-const promiseForShortcutPressed = (win, key) => new Promise(resolve => shortcuts.register(win, key, resolve));
-const promiseForAppShortcutPressed = key => new Promise(resolve => shortcuts.register(key, resolve));
-
-async function shortcutWasPressed(shortcutPressed) {
-	return undefined === await pTimeout(shortcutPressed, 400);
-}
-
-async function shortcutWasNotPressed(shortcutPressed) {
-	const err = await pTimeout(shortcutPressed, 400).catch(err => err);
-	return err instanceof Error && err.message === 'Promise timed out after 400 milliseconds';
-}
-
-async function shortcutIsNotEnabledOnRegistering(key, win) {
-	const shortcutPressed = promiseForShortcutPressed(win, key);
-	mock.keypress(key);
-	return shortcutWasNotPressed(shortcutPressed);
-}
-
-async function shortcutIsEnabledOnRegistering(key, win) {
-	const shortcutPressed = promiseForShortcutPressed(win, key);
-	mock.keypress(key);
-	return shortcutWasPressed(shortcutPressed);
-}
-
-async function appShortcutIsNotEnabledOnRegistering(key) {
-	const shortcutPressed = promiseForAppShortcutPressed(key);
-	mock.keypress(key);
-	return shortcutWasNotPressed(shortcutPressed);
-}
-
-async function appShortcutIsEnabledOnRegistering(key) {
-	const shortcutPressed = promiseForAppShortcutPressed(key);
-	mock.keypress(key);
-	return shortcutWasPressed(shortcutPressed);
-}
 
 test('exports an shortcuts object', async t => {
 	t.is(typeof shortcuts, 'object');
 });
 
-test('appReady return a promise that resolve when electron app is ready', beforeAll);
+test(
+	'appReady return a promise that resolve when electron app is ready',
+	beforeAll
+);
 
-test('shortcut is disabled when window loose focus', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	await focusWindow(winHolder);
-	mock.keypress('Alt+A');
-	t.true(await shortcutWasNotPressed(shortcutPressed));
-
-	win2.close();
+test('shortcut is called on keydown only', async t => {
+	let called = 0;
+	shortcuts.register(winHolder, 'Alt+R', () => {
+		called++;
+	});
+	robot.keyTap('r', ['alt']);
+	await delay(400);
+	shortcuts.unregister(winHolder, 'Alt+R');
+	t.is(called, 1);
 });
 
-test('shortcut is disabled when window is hidden', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	win2.hide();
-	mock.keypress('Alt+A');
-	t.true(await shortcutWasNotPressed(shortcutPressed));
-
-	win2.close();
-});
-
-test('shortcut is enabled when window is focused again', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	await focusWindow(winHolder);
-	await focusWindow(win2);
-	mock.keypress('Alt+A');
+test('shortcut is called', async t => {
+	const shortcutPressed = promiseForShortcutPressed('Alt+Ctrl+U');
+	robot.keyTap('u', ['alt', 'control']);
 	t.true(await shortcutWasPressed(shortcutPressed));
-
-	win2.close();
 });
 
-test('shortcut is enabled when window is showed again', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	win2.hide();
-	win2.showInactive();
+test('shortcut is not called on closed windows', async t => {
+	const win = new BrowserWindow();
+	win.loadURL(`file://${__dirname}/example.html`);
+	await windowVisible(win);
+	const shortcutPressed = promiseForShortcutPressedOnWindow(win, 'Ctrl+A');
+
+	win.close();
+	await windowClosed(win);
+
+	robot.keyTap('a', ['control']);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
+	t.equal(err.message, 'Promise timed out after 400 milliseconds');
+});
+
+test('app shortcut are called on every windows', async t => {
+	winHolder.hide();
+
+	const win = new BrowserWindow({show: false});
+	const win2 = new BrowserWindow({show: false});
+
+	win.loadURL(`file://${__dirname}/example.html`);
+	win2.loadURL(`file://${__dirname}/example.html`);
+
+	let called = 0;
+	shortcuts.register('Alt+R', () => {
+		if (called === 0) {
+			win.close();
+		}
+
+		if (called === 1) {
+			win2.close();
+		}
+
+		called++;
+	});
+
+	win.show();
+	await windowVisible(win);
+
+	robot.keyTap('r', ['alt']);
+
+	await windowClosed(win);
+
+	win2.show();
 	await windowVisible(win2);
-	mock.keypress('Alt+A');
-	t.true(await shortcutWasPressed(shortcutPressed));
 
-	win2.close();
-});
+	robot.keyTap('r', ['alt']);
 
-test('shortcut is disabled when window is minified', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	await minimizeWindow(win2);
-	mock.keypress('Alt+A');
-	t.true(await shortcutWasNotPressed(shortcutPressed));
+	await windowClosed(win2);
 
-	win2.close();
-});
-
-test('shortcut is enabled when window is restored', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	const shortcutPressed = promiseForShortcutPressed(win2, 'Alt+A');
-	await minimizeWindow(win2);
-	await restoreWindow(win2);
-	mock.keypress('Alt+A');
-	t.true(await shortcutWasPressed(shortcutPressed));
-
-	win2.close();
-});
-
-test('shortcut is enabled on registering if window is focused', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	t.true(await shortcutIsEnabledOnRegistering('Ctrl+A', win2));
-	win2.close();
-});
-
-test('shortcut is not enabled on registering if window is not focused', async t => {
-	const win2 = new BrowserWindow({show: false});
-	win2.showInactive();
-	await windowVisible(win2);
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+B', win2));
-	win2.close();
-});
-
-test('shortcut is not enabled on registering if window is minimized', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	await minimizeWindow(win2);
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+W', win2));
-	win2.close();
-});
-
-test('shortcut is not enabled on registering if window is not showed', async t => {
-	const win2 = new BrowserWindow({show: false});
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+E', win2));
-	win2.close();
-});
-
-test('shortcut is not enabled on registering if window is hidden', async t => {
-	const win2 = new BrowserWindow();
-	win2.hide();
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+R', win2));
-	win2.close();
-});
-
-test('shortcut is not enabled on registering if window is never showed, but minimized and restored', async t => {
-	const win2 = new BrowserWindow({show: false});
-	await minimizeWindow(win2);
-	await restoreWindow(win2);
-	t.true(await shortcutIsNotEnabledOnRegistering('Ctrl+J', win2));
-	win2.close();
-});
-
-test('app shortcut is enabled on registering if window is focused', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	t.true(await appShortcutIsEnabledOnRegistering('Ctrl+D'));
-	win2.close();
-});
-
-test('app shortcut is not enabled on registering if window is not focused', async t => {
-	const win2 = new BrowserWindow({show: false});
-	winHolder.hide();
-	win2.showInactive();
-	await windowVisible(win2);
-	t.true(await appShortcutIsNotEnabledOnRegistering('Ctrl+E'));
-	win2.close();
 	winHolder.show();
+	t.is(called, 2);
 });
 
-test('app shortcut is not enabled on registering if window is minimized', async t => {
-	const win2 = new BrowserWindow();
-	await focusWindow(win2);
-	await minimizeWindow(win2);
-	t.true(await appShortcutIsNotEnabledOnRegistering('Ctrl+I'));
-	win2.close();
-});
+test('shortcut is not called after unregister', async t => {
+	const shortcutPressed = promiseForShortcutPressed('Ctrl+A');
+	shortcuts.unregister(winHolder, 'Ctrl+A');
 
-test('app shortcut is not enabled on registering if window is not showed', async t => {
-	winHolder.hide();
-	const win2 = new BrowserWindow({show: false});
-	t.true(await appShortcutIsNotEnabledOnRegistering('Ctrl+L'));
-	win2.close();
-	winHolder.show();
-});
-
-test('app shortcut is not enabled on registering if window is hidden', async t => {
-	const win2 = new BrowserWindow();
-	winHolder.hide();
-	win2.hide();
-	t.true(await appShortcutIsNotEnabledOnRegistering('Ctrl+M'));
-	win2.close();
-	winHolder.show();
-});
-
-test('app shortcut is not enabled on registering if window is never showed, but minimized and restored', async t => {
-	winHolder.hide();
-	const win2 = new BrowserWindow({show: false});
-	await minimizeWindow(win2);
-	await restoreWindow(win2);
-	t.true(await appShortcutIsNotEnabledOnRegistering('Ctrl+N'));
-	win2.close();
-	winHolder.show();
+	robot.keyTap('a', ['control']);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
+	console.log(err);
+	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
 test('app quit', t => {
@@ -256,3 +109,44 @@ test('app quit', t => {
 		w.close();
 	}
 });
+
+function promiseForShortcutPressedOnWindow(win, key) {
+	const destroy = () => shortcuts.unregister(win, key);
+
+	const result = new Promise(resolve =>
+		shortcuts.register(win, key, resolve)
+	).then(destroy);
+
+	result.destroy = destroy;
+	return result;
+}
+
+function promiseForShortcutPressed(key) {
+	const destroy = () => shortcuts.unregister(winHolder, key);
+
+	const result = new Promise(resolve =>
+		shortcuts.register(winHolder, key, resolve)
+	).then(destroy);
+
+	result.destroy = destroy;
+	return result;
+}
+
+async function beforeAll() {
+	await appReady();
+	// We could create a window, because the app is ready
+	winHolder = new BrowserWindow();
+	winHolder.loadURL(`file://${__dirname}/example.html`);
+	await windowVisible(winHolder);
+}
+
+async function shortcutWasPressed(shortcutPressed) {
+	return undefined === (await pTimeout(shortcutPressed, 400));
+}
+
+function shortcutWasNotPressed(shortcutPressed) {
+	return pTimeout(shortcutPressed, 400).catch(err => {
+		shortcutPressed.destroy();
+		throw err;
+	});
+}
