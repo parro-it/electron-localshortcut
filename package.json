@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"delay": "^2.0.0",
 		"documentation": "^4.0.0-rc.1",
-		"electron": "~1.6.7",
+		"electron": "~1.7.11",
 		"faucet": "^0.0.1",
 		"p-electron": "^0.8.0",
 		"p-event": "^1.1.0",
