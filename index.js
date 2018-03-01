@@ -142,16 +142,24 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 };
 
 /**
-* Registers the shortcut `accelerator`on the BrowserWindow instance.
+ * Registers the shortcut `accelerator`on the BrowserWindow instance.
  * @param  {BrowserWindow} win - BrowserWindow instance to register.
  * This argument could be omitted, in this case the function register
  * the shortcut on all app windows.
- * @param  {String} accelerator - the shortcut to register
+ * @param  {String|Array<String>} accelerator - the shortcut to register
  * @param  {Function} callback    This function is called when the shortcut is pressed
  * and the window is focused and not minimized.
- * @return {Undefined}
+ * @return {void}
  */
 function register(win, accelerator, callback) {
+	if (accelerator instanceof Array) {
+		accelerator.forEach(accelerator => {
+			if (typeof accelerator === 'string') {
+				register(win, accelerator, callback);
+			}
+		});
+		return;
+	}
 	let wc;
 	if (typeof callback === 'undefined') {
 		wc = ANY_WINDOW;
@@ -229,10 +237,18 @@ function register(win, accelerator, callback) {
  * @param  {BrowserWindow} win - BrowserWindow instance to unregister.
  * This argument could be omitted, in this case the function unregister the shortcut
  * on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
- * @param  {String} accelerator - the shortcut to unregister
- * @return {Undefined}
+ * @param  {String|Array<String>} accelerator - the shortcut to unregister
+ * @return {void}
  */
 function unregister(win, accelerator) {
+	if (accelerator instanceof Array) {
+		accelerator.forEach(accelerator => {
+			if (typeof accelerator === 'string') {
+				unregister(win, accelerator);
+			}
+		});
+		return;
+	}
 	let wc;
 	if (typeof accelerator === 'undefined') {
 		wc = ANY_WINDOW;
@@ -273,7 +289,7 @@ function unregister(win, accelerator) {
 		// Remove listener from window
 		shortcutsOfWindow.removeListener();
 
-		// Remove window from shrtcuts catalog
+		// Remove window from shortcuts catalog
 		windowsWithShortcuts.delete(wc);
 	}
 }
