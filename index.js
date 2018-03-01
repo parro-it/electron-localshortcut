@@ -152,7 +152,7 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @return {void}
  */
 function register(win, accelerator, callback) {
-	if (accelerator instanceof Array) {
+	if (Array.isArray(accelerator) === true) {
 		accelerator.forEach(accelerator => {
 			if (typeof accelerator === 'string') {
 				register(win, accelerator, callback);
@@ -241,7 +241,7 @@ function register(win, accelerator, callback) {
  * @return {void}
  */
 function unregister(win, accelerator) {
-	if (accelerator instanceof Array) {
+	if (Array.isArray(accelerator) === true) {
 		accelerator.forEach(accelerator => {
 			if (typeof accelerator === 'string') {
 				unregister(win, accelerator);
