@@ -152,14 +152,6 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @return {Undefined}
  */
 function register(win, accelerator, callback) {
-	if (Array.isArray(accelerator) === true) {
-		accelerator.forEach(accelerator => {
-			if (typeof accelerator === 'string') {
-				register(win, accelerator, callback);
-			}
-		});
-		return;
-	}
 	let wc;
 	if (typeof callback === 'undefined') {
 		wc = ANY_WINDOW;
@@ -167,6 +159,14 @@ function register(win, accelerator, callback) {
 		accelerator = win;
 	} else {
 		wc = win.webContents;
+	}
+	if (Array.isArray(accelerator) === true) {
+		accelerator.forEach(accelerator => {
+			if (typeof accelerator === 'string') {
+				register(win, accelerator, callback);
+			}
+		});
+		return;
 	}
 
 	debug(`Registering callback for ${accelerator} on window ${title(win)}`);
@@ -241,14 +241,6 @@ function register(win, accelerator, callback) {
  * @return {Undefined}
  */
 function unregister(win, accelerator) {
-	if (Array.isArray(accelerator) === true) {
-		accelerator.forEach(accelerator => {
-			if (typeof accelerator === 'string') {
-				unregister(win, accelerator);
-			}
-		});
-		return;
-	}
 	let wc;
 	if (typeof accelerator === 'undefined') {
 		wc = ANY_WINDOW;
@@ -259,6 +251,14 @@ function unregister(win, accelerator) {
 			return;
 		}
 		wc = win.webContents;
+	}
+	if (Array.isArray(accelerator) === true) {
+		accelerator.forEach(accelerator => {
+			if (typeof accelerator === 'string') {
+				unregister(win, accelerator);
+			}
+		});
+		return;
 	}
 
 	debug(`Unregistering callback for ${accelerator} on window ${title(win)}`);
