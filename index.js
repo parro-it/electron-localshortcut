@@ -33,9 +33,9 @@ function _checkAccelerator(accelerator) {
 WARNING: ${accelerator} is not a valid accelerator.
 
 ${w.stack
-			.split('\n')
-			.slice(4)
-			.join('\n')}
+	.split('\n')
+	.slice(4)
+	.join('\n')}
 `;
 		console.error(msg);
 	}

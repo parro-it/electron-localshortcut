@@ -21,16 +21,17 @@
 		"index.js"
 	],
 	"devDependencies": {
+		"ava": "^0.25.0",
 		"delay": "^2.0.0",
-		"documentation": "^4.0.0-rc.1",
-		"electron": "~1.6.7",
+		"documentation": "^6.0.0",
+		"electron": "^1.8.2",
 		"faucet": "^0.0.1",
 		"p-electron": "^0.8.0",
 		"p-event": "^1.1.0",
 		"p-timeout": "^1.0.0",
 		"robotjs": "^0.4.7",
 		"tape-async": "^2.3.0",
-		"xo": "^0.19.0"
+		"xo": "^0.20.3"
 	},
 	"dependencies": {
 		"debug": "^2.6.8",
