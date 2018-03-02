@@ -101,6 +101,30 @@ test('shortcut is not called after unregister', async t => {
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
+test('accelerator can be array of strings', async t => {
+	let called = 0;
+	shortcuts.register(winHolder, ['Ctrl+X', 'Ctrl+Y'], () => {
+		called++;
+	});
+
+	robot.keyTap('x', ['control']);
+	robot.keyTap('y', ['control']);
+	await delay(400);
+	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
+	t.is(called, 2);
+});
+
+test('shortcuts are not called after unregister', async t => {
+	const shortcutPressed = promiseForShortcutPressed(['Ctrl+X', 'Ctrl+Y']);
+	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
+
+	robot.keyTap('x', ['control']);
+	robot.keyTap('y', ['control']);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
+	console.log(err);
+	t.equal(err.message, 'Promise timed out after 400 milliseconds');
+});
+
 test('app quit', t => {
 	app.on('window-all-closed', () => app.quit());
 	t.end();

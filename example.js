@@ -32,6 +32,10 @@ app.on('ready', () => {
 		process.stdout.write('C2\n');
 	});
 
+	electronLocalshortcut.register(win2, ['Ctrl+R', 'F5'], () => {
+		process.stdout.write('Refresh\n');
+	});
+
 	const template = [
 		{
 			label: 'test',
