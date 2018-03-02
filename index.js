@@ -149,7 +149,7 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @param  {String|Array<String>} accelerator - the shortcut to register
  * @param  {Function} callback    This function is called when the shortcut is pressed
  * and the window is focused and not minimized.
- * @return {void}
+ * @return {Undefined}
  */
 function register(win, accelerator, callback) {
 	if (Array.isArray(accelerator) === true) {
@@ -238,7 +238,7 @@ function register(win, accelerator, callback) {
  * This argument could be omitted, in this case the function unregister the shortcut
  * on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
  * @param  {String|Array<String>} accelerator - the shortcut to unregister
- * @return {void}
+ * @return {Undefined}
  */
 function unregister(win, accelerator) {
 	if (Array.isArray(accelerator) === true) {
