@@ -29,7 +29,7 @@
 		"p-electron": "^0.8.0",
 		"p-event": "^1.1.0",
 		"p-timeout": "^1.0.0",
-		"robotjs": "^0.4.7",
+		"robotjs": "^0.5.0",
 		"tape-async": "^2.3.0",
 		"xo": "^0.20.3"
 	},
