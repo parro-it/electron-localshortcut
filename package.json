@@ -31,7 +31,7 @@
 		"p-timeout": "^1.0.0",
 		"robotjs": "^0.4.7",
 		"tape-async": "^2.3.0",
-		"xo": "^0.20.3"
+		"xo": "^0.21.0"
 	},
 	"dependencies": {
 		"debug": "^2.6.8",
