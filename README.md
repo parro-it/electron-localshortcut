@@ -5,8 +5,6 @@ locally to a BrowserWindow instance, without using a Menu.
 
 This is built to circumvent [this Electron issue](https://github.com/atom/electron/issues/1334).
 
-**Note:** Since this module internally use `global-shortcut` native module, you should not use it until the `ready` event of the app module is emitted. See [electron docs](http://electron.atom.io/docs/latest/api/global-shortcut/).
-
 [![Travis Build Status](https://img.shields.io/travis/parro-it/electron-localshortcut/master.svg)](http://travis-ci.org/parro-it/electron-localshortcut)
 [![NPM module](https://img.shields.io/npm/v/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
 [![NPM downloads](https://img.shields.io/npm/dt/electron-localshortcut.svg)](https://npmjs.org/package/electron-localshortcut)
