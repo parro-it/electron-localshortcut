@@ -9,7 +9,7 @@
 		"doc": "documentation readme index.js --section=API",
 		"start": "electron example.js",
 		"test": "electron test.js | faucet && xo",
-		"setup-dev": "npm rebuild --runtime=electron --target=1.8.2 --disturl=https://atom.io/download/atom-shell --abi=51",
+		"setup-dev": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --abi=64",
 		"tape": "DEBUG=electron-localshortcut electron test.js"
 	},
 	"keywords": [
@@ -20,23 +20,23 @@
 	"files": [
 		"index.js"
 	],
-	"devDependencies": {
-		"ava": "^0.25.0",
-		"delay": "^2.0.0",
-		"documentation": "^6.0.0",
-		"electron": "^1.8.2",
-		"faucet": "^0.0.1",
-		"p-electron": "^0.8.0",
-		"p-event": "^1.1.0",
-		"p-timeout": "^1.0.0",
-		"robotjs": "^0.4.7",
-		"tape-async": "^2.3.0",
-		"xo": "^0.20.3"
-	},
 	"dependencies": {
-		"debug": "^2.6.8",
+		"debug": "^4.0.1",
 		"electron-is-accelerator": "^0.1.0",
 		"keyboardevent-from-electron-accelerator": "^1.1.0",
 		"keyboardevents-areequal": "^0.2.1"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"delay": "^4.0.1",
+		"documentation": "^8.1.2",
+		"electron": "^3.0.0",
+		"faucet": "0.0.1",
+		"p-electron": "^0.8.0",
+		"p-event": "^2.1.0",
+		"p-timeout": "^2.0.1",
+		"robotjs": "^0.5.1",
+		"tape-async": "^2.3.0",
+		"xo": "^0.23.0"
 	}
 }
