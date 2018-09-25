@@ -29,13 +29,11 @@ function _checkAccelerator(accelerator) {
 	if (!isAccelerator(accelerator)) {
 		const w = {};
 		Error.captureStackTrace(w);
+		const stack = w.stack ? w.stack.split('\n').slice(4).join('\n') : w.message;
 		const msg = `
 WARNING: ${accelerator} is not a valid accelerator.
 
-${w.stack
-	.split('\n')
-	.slice(4)
-	.join('\n')}
+${stack}
 `;
 		console.error(msg);
 	}
