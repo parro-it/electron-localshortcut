@@ -21,7 +21,7 @@
 		"index.js"
 	],
 	"dependencies": {
-		"debug": "^4.0.1",
+		"debug": "4.0.1",
 		"electron-is-accelerator": "^0.1.0",
 		"keyboardevent-from-electron-accelerator": "^1.1.0",
 		"keyboardevents-areequal": "^0.2.1"
