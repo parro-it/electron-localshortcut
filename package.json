@@ -28,7 +28,7 @@
 	},
 	"devDependencies": {
 		"ava": "^0.25.0",
-		"delay": "^4.0.1",
+		"delay": "^4.1.0",
 		"documentation": "^8.1.2",
 		"electron": "^3.0.0",
 		"faucet": "0.0.1",
