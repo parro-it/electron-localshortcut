@@ -26,7 +26,12 @@ const title = win => {
 };
 
 function _checkAccelerator(accelerator) {
-  let allAreAccelerators = accelerator.every(isAccelerator)
+  var allAreAccelerators
+  if (Array.isArray(accelerator)) {
+    allAreAccelerators = accelerator.every(isAccelerator)
+  } else {
+    allAreAccelerators = isAccelerator(accelerator)
+  }
   if (!allAreAccelerators) {
     const w = {};
     Error.captureStackTrace(w);
@@ -218,19 +223,31 @@ function register(win, accelerator, callback) {
 		}
 	}
 
-	debug(`Adding shortcut to window set.`);
-
-  accelerator.forEach(acc => {
-    let eventStamp = toKeyEvent(acc);
-    shortcutsOfWindow.push({
-      eventStamp,
-      callback,
-      enabled: true
+  debug(`Adding shortcut to window set.`);
+  
+  if (Array.isArray(accelerator)) {
+    accelerator.forEach(acc => {
+      let eventStamp = toKeyEvent(acc);
+      shortcutsOfWindow.push({
+        eventStamp,
+        callback,
+        enabled: true
+      });
+  
+      debug(`Shortcut registered.`);
     });
+  } else {
+    let eventStamp = toKeyEvent(accelerator);
+      shortcutsOfWindow.push({
+        eventStamp,
+        callback,
+        enabled: true
+      });
+  
+      debug(`Shortcut registered.`);
+  }
 
-    debug(`Shortcut registered.`);
 
-  });
 }
 
 /**
