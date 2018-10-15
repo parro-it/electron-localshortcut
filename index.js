@@ -26,9 +26,10 @@ const title = win => {
 };
 
 function _checkAccelerator(accelerator) {
-	if (!isAccelerator(accelerator)) {
-		const w = {};
-		Error.captureStackTrace(w);
+  let allAreAccelerators = accelerator.every(isAccelerator)
+  if (!allAreAccelerators) {
+    const w = {};
+    Error.captureStackTrace(w);
 		const stack = w.stack ? w.stack.split('\n').slice(4).join('\n') : w.message;
 		const msg = `
 WARNING: ${accelerator} is not a valid accelerator.
@@ -219,15 +220,17 @@ function register(win, accelerator, callback) {
 
 	debug(`Adding shortcut to window set.`);
 
-	const eventStamp = toKeyEvent(accelerator);
+  accelerator.forEach(acc => {
+    let eventStamp = toKeyEvent(acc);
+    shortcutsOfWindow.push({
+      eventStamp,
+      callback,
+      enabled: true
+    });
 
-	shortcutsOfWindow.push({
-		eventStamp,
-		callback,
-		enabled: true
-	});
+    debug(`Shortcut registered.`);
 
-	debug(`Shortcut registered.`);
+  });
 }
 
 /**
