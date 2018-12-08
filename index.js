@@ -82,6 +82,7 @@ function enableAll(win) {
  */
 function unregisterAll(win) {
 	debug(`Unregistering all shortcuts on window ${title(win)}`);
+	if (win.isDestroyed()) return;
 	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
 
@@ -213,7 +214,7 @@ function register(win, accelerator, callback) {
 			// Save a reference to allow remove of listener from elsewhere
 			shortcutsOfWindow.removeListener = () =>
 				wc.removeListener('before-input-event', keyHandler);
-			wc.once('closed', shortcutsOfWindow.removeListener);
+			win.once('closed', shortcutsOfWindow.removeListener);
 		}
 	}
 
