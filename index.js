@@ -303,7 +303,7 @@ function unregister(win, accelerator) {
  * @return {Boolean} - if the shortcut `accelerator` is registered on `window`.
  */
 function isRegistered(win, accelerator) {
-	_checkAccelerator(accelerator);
+	return _checkAccelerator(accelerator);
 }
 
 module.exports = {
