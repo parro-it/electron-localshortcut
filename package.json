@@ -27,7 +27,7 @@
 		"keyboardevents-areequal": "^0.2.1"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
+		"ava": "^1.0.1",
 		"delay": "^4.0.1",
 		"documentation": "^8.1.2",
 		"electron": "^3.0.0",
