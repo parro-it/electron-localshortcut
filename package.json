@@ -33,7 +33,7 @@
 		"electron": "^3.0.0",
 		"faucet": "0.0.1",
 		"p-electron": "^0.8.0",
-		"p-event": "^2.1.0",
+		"p-event": "^3.0.0",
 		"p-timeout": "^2.0.1",
 		"robotjs": "^0.5.1",
 		"tape-async": "^2.3.0",
