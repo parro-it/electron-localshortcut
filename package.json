@@ -30,7 +30,7 @@
 		"ava": "^0.25.0",
 		"delay": "^4.0.1",
 		"documentation": "^8.1.2",
-		"electron": "^3.0.0",
+		"electron": "^6.0.2",
 		"faucet": "0.0.1",
 		"p-electron": "^0.8.0",
 		"p-event": "^2.1.0",
