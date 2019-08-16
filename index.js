@@ -108,6 +108,10 @@ function _normalizeEvent(input) {
 	if (typeof input.control !== 'undefined') {
 		normalizedEvent.ctrlKey = input.control;
 	}
+	
+	if (input.code === 'Space') {
+		[normalizedEvent.code, normalizedEvent.key] = normalizedEvent.key, normalizedEvent.code;
+	}
 
 	return normalizedEvent;
 }
