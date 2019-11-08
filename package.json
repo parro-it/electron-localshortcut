@@ -27,7 +27,7 @@
 		"keyboardevents-areequal": "^0.2.1"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
+		"ava": "^2.4.0",
 		"robotjs": "^0.5.1",
 		"delay": "^4.0.1",
 		"documentation": "^8.1.2",
