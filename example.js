@@ -107,6 +107,14 @@ app.on('ready', () => {
 							console.log('Control E !');
 						});
 					}
+				},
+				{
+					label: 'Check Space',
+					click() {
+						electronLocalshortcut.register(win2, 'Ctrl+Space', () => {
+							console.log('Ctrl+Space!');
+						});
+					}
 				}
 			]
 		},
