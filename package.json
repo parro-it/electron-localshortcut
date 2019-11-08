@@ -9,7 +9,7 @@
 		"doc": "documentation readme index.js --section=API",
 		"start": "electron example.js",
 		"test": "electron test.js | faucet && xo",
-		"setup-dev": "npm rebuild --runtime=electron --target=3.0.0 --disturl=https://atom.io/download/atom-shell --abi=64",
+		"setup-dev": "npm rebuild --runtime=electron --target=4.2.12 --disturl=https://atom.io/download/atom-shell --abi=64",
 		"tape": "DEBUG=electron-localshortcut electron test.js"
 	},
 	"keywords": [
@@ -28,14 +28,14 @@
 	},
 	"devDependencies": {
 		"ava": "^0.25.0",
+		"robotjs": "^0.5.1",
 		"delay": "^4.0.1",
 		"documentation": "^8.1.2",
-		"electron": "^3.0.0",
+		"electron": "^4.2.12",
 		"faucet": "0.0.1",
 		"p-electron": "^0.8.0",
 		"p-event": "^2.1.0",
 		"p-timeout": "^2.0.1",
-		"robotjs": "^0.5.1",
 		"tape-async": "^2.3.0",
 		"xo": "^0.23.0"
 	}
