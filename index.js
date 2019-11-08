@@ -127,7 +127,6 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 
 	debug(`before-input-event: ${input} is translated to: ${event}`);
 	for (const {eventStamp, callback} of shortcutsOfWindow) {
-		//console.error({eventStamp, event})
 		if (equals(eventStamp, event)) {
 			debug(`eventStamp: ${eventStamp} match`);
 			callback();
