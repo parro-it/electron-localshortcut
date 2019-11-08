@@ -17,7 +17,7 @@ const title = win => {
 	if (win) {
 		try {
 			return win.getTitle();
-		} catch (error) {
+		} catch {
 			return 'A destroyed window';
 		}
 	}
@@ -113,8 +113,10 @@ function _findShortcut(event, shortcutsOfWindow) {
 		if (equals(shortcut.eventStamp, event)) {
 			return i;
 		}
+
 		i++;
 	}
+
 	return -1;
 }
 
@@ -130,8 +132,10 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 		if (equals(eventStamp, event)) {
 			debug(`eventStamp: ${eventStamp} match`);
 			callback();
+
 			return;
 		}
+
 		debug(`eventStamp: ${eventStamp} no match`);
 	}
 };
@@ -154,6 +158,7 @@ function register(win, accelerator, callback) {
 	} else {
 		wc = win.webContents;
 	}
+
 	if (Array.isArray(accelerator) === true) {
 		accelerator.forEach(accelerator => {
 			if (typeof accelerator === 'string') {
@@ -243,8 +248,10 @@ function unregister(win, accelerator) {
 			debug('Early return because window is destroyed.');
 			return;
 		}
+
 		wc = win.webContents;
 	}
+
 	if (Array.isArray(accelerator) === true) {
 		accelerator.forEach(accelerator => {
 			if (typeof accelerator === 'string') {

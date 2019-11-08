@@ -10,7 +10,7 @@ app.on('ready', () => {
 	// Should raise a warning in console
 	try {
 		electronLocalshortcut.register(win, 'C+C', () => {});
-	} catch (error) {}
+	} catch {}
 
 	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
 		process.stdout.write('A\n');

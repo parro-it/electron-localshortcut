@@ -28,7 +28,6 @@
 	},
 	"devDependencies": {
 		"ava": "^2.4.0",
-		"robotjs": "^0.5.1",
 		"delay": "^4.0.1",
 		"documentation": "^8.1.2",
 		"electron": "^4.2.12",
@@ -36,6 +35,7 @@
 		"p-electron": "^0.8.0",
 		"p-event": "^2.1.0",
 		"p-timeout": "^2.0.1",
+		"robotjs": "^0.5.1",
 		"tape-async": "^2.3.0",
 		"xo": "^0.25.3"
 	}
