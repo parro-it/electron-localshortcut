@@ -299,6 +299,11 @@ function unregister(win, accelerator) {
  */
 function isRegistered(win, accelerator) {
 	_checkAccelerator(accelerator);
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
+	const eventStamp = toKeyEvent(accelerator);
+
+	return _findShortcut(eventStamp, shortcutsOfWindow) !== -1;
 }
 
 module.exports = {
