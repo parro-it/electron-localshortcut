@@ -31,6 +31,19 @@ test('shortcut is called on keydown only', async t => {
 	t.is(called, 1);
 });
 
+test('accelerator can be array of strings', async t => {
+	let called = 0;
+	shortcuts.register(winHolder, ['Ctrl+X', 'Ctrl+Y'], () => {
+		called++;
+	});
+
+	robot.keyTap('x', ['control']);
+	robot.keyTap('y', ['control']);
+	await delay(400);
+	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
+	t.is(called, 2);
+});
+
 test('shortcut is called', async t => {
 	const shortcutPressed = promiseForShortcutPressed('Alt+Ctrl+U');
 	robot.keyTap('u', ['alt', 'control']);
@@ -47,7 +60,27 @@ test('shortcut is not called on closed windows', async t => {
 	await windowClosed(win);
 
 	robot.keyTap('a', ['control']);
-	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(error => error);
+	t.equal(err.message, 'Promise timed out after 400 milliseconds');
+});
+
+test('shortcut is not called after unregister', async t => {
+	const shortcutPressed = promiseForShortcutPressed('Ctrl+A');
+	shortcuts.unregister(winHolder, 'Ctrl+A');
+
+	robot.keyTap('a', ['control']);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(error => error);
+	t.equal(err.message, 'Promise timed out after 400 milliseconds');
+});
+
+test('shortcuts are not called after unregister', async t => {
+	const shortcutPressed = promiseForShortcutPressed(['Ctrl+X', 'Ctrl+Y']);
+	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
+
+	robot.keyTap('x', ['control']);
+	robot.keyTap('y', ['control']);
+	const err = await shortcutWasNotPressed(shortcutPressed).catch(error => error);
+	console.log(err);
 	t.equal(err.message, 'Promise timed out after 400 milliseconds');
 });
 
@@ -74,14 +107,16 @@ test('app shortcut are called on every windows', async t => {
 	});
 
 	win.show();
+	win.setAlwaysOnTop(true);
 	await windowVisible(win);
-
+	await delay(500);
 	robot.keyTap('r', ['alt']);
 
 	await windowClosed(win);
-
 	win2.show();
+	win2.setAlwaysOnTop(true);
 	await windowVisible(win2);
+	await delay(500);
 
 	robot.keyTap('r', ['alt']);
 
@@ -89,42 +124,10 @@ test('app shortcut are called on every windows', async t => {
 
 	winHolder.show();
 	t.is(called, 2);
+	t.end();
 });
 
-test('shortcut is not called after unregister', async t => {
-	const shortcutPressed = promiseForShortcutPressed('Ctrl+A');
-	shortcuts.unregister(winHolder, 'Ctrl+A');
-
-	robot.keyTap('a', ['control']);
-	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
-	console.log(err);
-	t.equal(err.message, 'Promise timed out after 400 milliseconds');
-});
-
-test('accelerator can be array of strings', async t => {
-	let called = 0;
-	shortcuts.register(winHolder, ['Ctrl+X', 'Ctrl+Y'], () => {
-		called++;
-	});
-
-	robot.keyTap('x', ['control']);
-	robot.keyTap('y', ['control']);
-	await delay(400);
-	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
-	t.is(called, 2);
-});
-
-test('shortcuts are not called after unregister', async t => {
-	const shortcutPressed = promiseForShortcutPressed(['Ctrl+X', 'Ctrl+Y']);
-	shortcuts.unregister(winHolder, ['Ctrl+X', 'Ctrl+Y']);
-
-	robot.keyTap('x', ['control']);
-	robot.keyTap('y', ['control']);
-	const err = await shortcutWasNotPressed(shortcutPressed).catch(err => err);
-	console.log(err);
-	t.equal(err.message, 'Promise timed out after 400 milliseconds');
-});
-
+/* This test must remain the last one in file */
 test('app quit', t => {
 	app.on('window-all-closed', () => app.quit());
 	t.end();
@@ -133,6 +136,14 @@ test('app quit', t => {
 		w.close();
 	}
 });
+
+async function beforeAll() {
+	await appReady();
+	// We could create a window, because the app is ready
+	winHolder = new BrowserWindow();
+	winHolder.loadURL(`file://${__dirname}/example.html`);
+	await windowVisible(winHolder);
+}
 
 function promiseForShortcutPressedOnWindow(win, key) {
 	const destroy = () => shortcuts.unregister(win, key);
@@ -156,21 +167,13 @@ function promiseForShortcutPressed(key) {
 	return result;
 }
 
-async function beforeAll() {
-	await appReady();
-	// We could create a window, because the app is ready
-	winHolder = new BrowserWindow();
-	winHolder.loadURL(`file://${__dirname}/example.html`);
-	await windowVisible(winHolder);
-}
-
 async function shortcutWasPressed(shortcutPressed) {
 	return undefined === (await pTimeout(shortcutPressed, 400));
 }
 
 function shortcutWasNotPressed(shortcutPressed) {
-	return pTimeout(shortcutPressed, 400).catch(err => {
+	return pTimeout(shortcutPressed, 400).catch(error => {
 		shortcutPressed.destroy();
-		throw err;
+		throw error;
 	});
 }
