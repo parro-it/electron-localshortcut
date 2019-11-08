@@ -81,11 +81,11 @@ function unregisterAll(win) {
 	debug(`Unregistering all shortcuts on window ${title(win)}`);
 	const wc = win.webContents;
 	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
-
-	// Remove listener from window
-	shortcutsOfWindow.removeListener();
-
-	windowsWithShortcuts.delete(wc);
+	if (shortcutsOfWindow && shortcutsOfWindow.removeListener) {
+		// Remove listener from window
+		shortcutsOfWindow.removeListener();
+		windowsWithShortcuts.delete(wc);
+	}
 }
 
 function _normalizeEvent(input) {
