@@ -17,7 +17,7 @@ const title = win => {
 	if (win) {
 		try {
 			return win.getTitle();
-		} catch (err) {
+		} catch (error) {
 			return 'A destroyed window';
 		}
 	}
@@ -45,7 +45,6 @@ ${stack}
  * keep a reference on them. You can reactivate them later by calling `enableAll`
  * method on the same window instance.
  * @param  {BrowserWindow} win BrowserWindow instance
- * @return {Undefined}
  */
 function disableAll(win) {
 	debug(`Disabling all shortcuts on window ${title(win)}`);
@@ -61,7 +60,6 @@ function disableAll(win) {
  * Enable all of the shortcuts registered on the BrowserWindow instance that
  * you had previously disabled calling `disableAll` method.
  * @param  {BrowserWindow} win BrowserWindow instance
- * @return {Undefined}
  */
 function enableAll(win) {
 	debug(`Enabling all shortcuts on window ${title(win)}`);
@@ -78,7 +76,6 @@ function enableAll(win) {
  * instance. This method does not unregister any shortcut you registered on
  * a particular window instance.
  * @param  {BrowserWindow} win BrowserWindow instance
- * @return {Undefined}
  */
 function unregisterAll(win) {
 	debug(`Unregistering all shortcuts on window ${title(win)}`);
@@ -147,7 +144,6 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
  * @param  {String|Array<String>} accelerator - the shortcut to register
  * @param  {Function} callback    This function is called when the shortcut is pressed
  * and the window is focused and not minimized.
- * @return {Undefined}
  */
 function register(win, accelerator, callback) {
 	let wc;
@@ -174,10 +170,10 @@ function register(win, accelerator, callback) {
 
 	let shortcutsOfWindow;
 	if (windowsWithShortcuts.has(wc)) {
-		debug(`Window has others shortcuts registered.`);
+		debug('Window has others shortcuts registered.');
 		shortcutsOfWindow = windowsWithShortcuts.get(wc);
 	} else {
-		debug(`This is the first shortcut of the window.`);
+		debug('This is the first shortcut of the window.');
 		shortcutsOfWindow = [];
 		windowsWithShortcuts.set(wc, shortcutsOfWindow);
 
@@ -217,7 +213,7 @@ function register(win, accelerator, callback) {
 		}
 	}
 
-	debug(`Adding shortcut to window set.`);
+	debug('Adding shortcut to window set.');
 
 	const eventStamp = toKeyEvent(accelerator);
 
@@ -227,7 +223,7 @@ function register(win, accelerator, callback) {
 		enabled: true
 	});
 
-	debug(`Shortcut registered.`);
+	debug('Shortcut registered.');
 }
 
 /**
@@ -236,7 +232,6 @@ function register(win, accelerator, callback) {
  * This argument could be omitted, in this case the function unregister the shortcut
  * on all app windows. If you registered the shortcut on a particular window instance, it will do nothing.
  * @param  {String|Array<String>} accelerator - the shortcut to unregister
- * @return {Undefined}
  */
 function unregister(win, accelerator) {
 	let wc;
@@ -245,7 +240,7 @@ function unregister(win, accelerator) {
 		accelerator = win;
 	} else {
 		if (win.isDestroyed()) {
-			debug(`Early return because window is destroyed.`);
+			debug('Early return because window is destroyed.');
 			return;
 		}
 		wc = win.webContents;
@@ -266,7 +261,7 @@ function unregister(win, accelerator) {
 	debug(`${accelerator} seems a valid shortcut sequence.`);
 
 	if (!windowsWithShortcuts.has(wc)) {
-		debug(`Early return because window has never had shortcuts registered.`);
+		debug('Early return because window has never had shortcuts registered.');
 		return;
 	}
 
@@ -304,6 +299,11 @@ function unregister(win, accelerator) {
  */
 function isRegistered(win, accelerator) {
 	_checkAccelerator(accelerator);
+	const wc = win.webContents;
+	const shortcutsOfWindow = windowsWithShortcuts.get(wc);
+	const eventStamp = toKeyEvent(accelerator);
+
+	return _findShortcut(eventStamp, shortcutsOfWindow) !== -1;
 }
 
 module.exports = {

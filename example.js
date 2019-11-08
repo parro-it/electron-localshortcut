@@ -10,7 +10,7 @@ app.on('ready', () => {
 	// Should raise a warning in console
 	try {
 		electronLocalshortcut.register(win, 'C+C', () => {});
-	} catch (err) {}
+	} catch (error) {}
 
 	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
 		process.stdout.write('A\n');
@@ -105,6 +105,14 @@ app.on('ready', () => {
 					click() {
 						electronLocalshortcut.register(win2, 'Ctrl+E', () => {
 							console.log('Control E !');
+						});
+					}
+				},
+				{
+					label: 'Check Space',
+					click() {
+						electronLocalshortcut.register(win2, 'Ctrl+Space', () => {
+							console.log('Ctrl+Space!');
 						});
 					}
 				}
