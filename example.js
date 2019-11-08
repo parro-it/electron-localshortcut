@@ -115,7 +115,17 @@ app.on('ready', () => {
 							console.log('Ctrl+Space!');
 						});
 					}
+				},
+				{
+					label: 'Cmd+S & Ctrl+S',
+					click() {
+						electronLocalshortcut.register(win2, ['Alt+S', 'Ctrl+S'], () => {
+							console.log('use array');
+						});
+					}
 				}
+
+				
 			]
 		},
 		{
