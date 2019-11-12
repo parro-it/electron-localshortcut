@@ -17,7 +17,7 @@ const title = win => {
 	if (win) {
 		try {
 			return win.getTitle();
-		} catch {
+		} catch (error) {
 			return 'A destroyed window';
 		}
 	}
