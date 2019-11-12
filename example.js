@@ -10,7 +10,10 @@ app.on('ready', () => {
 	// Should raise a warning in console
 	try {
 		electronLocalshortcut.register(win, 'C+C', () => {});
-	} catch {}
+	// eslint-disable-next-line no-unused-vars
+	} catch (error) {
+
+	}
 
 	electronLocalshortcut.register(win, 'CmdOrCtrl+Z', () => {
 		process.stdout.write('A\n');
