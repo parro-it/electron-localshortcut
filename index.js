@@ -17,6 +17,7 @@ const title = win => {
 	if (win) {
 		try {
 			return win.getTitle();
+		// eslint-disable-next-line no-unused-vars
 		} catch (error) {
 			return 'A destroyed window';
 		}
