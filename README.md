@@ -55,7 +55,7 @@ They differ from native [global-shortcuts](https://github.com/atom/electron/blob
 
 # Shortcut behaviour.
 
-If you register a shortcut for a window, this module unregister the shortcut when the window is hidden, unfocused or minimized, and automatically restore them when the window is restored and focused again.
+If you register a shortcut for a window, this module unregister the shortcut when the window is hidden, unfocused or minimized, and automatically restore it when the window is restored and focused again.
 
 If you register an app shortcut, this module unregister the shortcut when all windows of your app are hidden, unfocused or minimized, and automatically restore it when any window of your app is restored and focused again.
 
