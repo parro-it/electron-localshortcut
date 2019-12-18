@@ -132,7 +132,9 @@ const _onBeforeInput = shortcutsOfWindow => (e, input) => {
 	for (const {eventStamp, callback} of shortcutsOfWindow) {
 		if (equals(eventStamp, event)) {
 			debug(`eventStamp: ${eventStamp} match`);
-			callback();
+			if (callback()) {
+				e.preventDefault();
+			}
 
 			return;
 		}
