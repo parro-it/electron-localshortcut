@@ -29,7 +29,7 @@
 	"devDependencies": {
 		"ava": "^2.4.0",
 		"delay": "^4.0.1",
-		"documentation": "^12.1.3",
+		"documentation": "^13.0.0",
 		"electron": "^4.2.12",
 		"faucet": "0.0.1",
 		"p-electron": "^0.8.0",
